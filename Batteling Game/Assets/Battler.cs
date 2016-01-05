@@ -120,64 +120,14 @@ public class CharacterStats
         }
     }
 }
-
-
-public class ActionFrameData
+public class CharacterSkills
 {
-    public int execution;
-    public int combo;
-    public int lag;
-    public int[] strikeFrames;
+    public AttackParamaters materialUp = AttackParamaters.BasicAttack;
+    public AttackParamaters materialSide = AttackParamaters.BasicAttack;
+    public AttackParamaters materialDown = AttackParamaters.BasicAttack;
+}
 
-    public int fullFrames
-    {
-        get
-        {
-            return execution + combo + lag;
-        }
-    }
-    
-    public static ActionFrameData BasicAttack
-    {
-        get
-        {
-            ActionFrameData ret = new ActionFrameData();
-            ret.execution = 15;
-            ret.combo = 15;
-            ret.lag = 30;
-            ret.strikeFrames = new int[1] { 15 };
 
-            return ret;
-        }
-    }
-}
-public class AttackHitBox
-{
-    public float range;
-}
-public class AttackEffects
-{
-    public float damge;
-    public float lift;
-    public float push;
-}
-[System.Serializable]
-public class AttackParamaters
-{
-    private Battler AttackUser;
-    public Battler attackUser
-    {
-        set
-        {
-            AttackUser = value;
-        }
-    }
-    private AttackEffects effects;
-    //public AttackHitBox hitbox;
-    public ActionFrameData frameData;
-
-    
-}
 //-------------------------------------------------------------------------------------------------------------------------------
 public class Battler : MonoBehaviour {
     //-----------------------------------------------------------BATTLER---------------------------------------------------------
@@ -187,11 +137,12 @@ public class Battler : MonoBehaviour {
     private Animator thisAnimation;
     private Transform thisTransform;
     public PainBox painBoxPrefab;
-    private BattleField field;
+    private BattleField battleField;
     //private PainBox painBoxVars;
     // Battle Variables
     public int alliance = 0;
     public float healthPoints = 100;
+    public CharacterSkills skills = new CharacterSkills();
     // Movement variables
     public BattlerPosition position;
     public Vector2 velocity = new Vector2(0, 0);
@@ -224,6 +175,7 @@ public class Battler : MonoBehaviour {
     private float execution;
     private bool canAct = true;
     private ActionFrameData currentActionFrames;
+    private AttackParamaters currentAttack;
     // Collision Variables
     public BattlerBody body;
     public BattlerCollider hurtBox
@@ -284,7 +236,43 @@ public class Battler : MonoBehaviour {
         thisTransform = GetComponent<Transform>();
         thisTransform.position = position.XYZ;
         // BattleField
-        field = GameObject.FindGameObjectWithTag("BattleField").GetComponent<BattleField>();
+        battleField = GameObject.FindGameObjectWithTag("BattleField").GetComponent<BattleField>();
+
+        // TEMPORARY-TEMPORARY-TEMPORARY-TEMPORARY-TEMPORARY-TEMPORARY-
+        AttackParamaters testAttack1 = new AttackParamaters();
+        AttackEffects testEffects1 = new AttackEffects();
+        testEffects1.push = 0.08f;
+        testEffects1.lift = 0;
+        testEffects1.damage = 10;
+        ActionFrameData testFrameData1 = new ActionFrameData();
+        testFrameData1.execution = 30;
+        testFrameData1.combo = 15;
+        testFrameData1.lag = 15;
+        testFrameData1.strikeFrames = new int[1] { 16 };
+
+        testAttack1.frameData = testFrameData1;
+        testAttack1.effects = testEffects1;
+        testAttack1.animationName = "thrust";
+
+        skills.materialDown = testAttack1;
+        skills.materialSide = testAttack1;
+        // UP
+        AttackParamaters testAttack2 = new AttackParamaters();
+        AttackEffects testEffects2 = new AttackEffects();
+        testEffects2.push = 0;
+        testEffects2.lift = 0.1f;
+        testEffects2.damage = 10;
+        ActionFrameData testFrameData2 = new ActionFrameData();
+        testFrameData2.execution = 10;
+        testFrameData2.combo = 45;
+        testFrameData2.lag = 1;
+        testFrameData2.strikeFrames = new int[1] { 5 };
+
+        testAttack2.frameData = testFrameData2;
+        testAttack2.effects = testEffects2;
+        //testAttack2.animationName = "attackBasic";
+
+        skills.materialUp = testAttack2;
     }
     //-----------------------------------------------------------UPDATE----------------------------------------------------------
     void Update()
@@ -297,9 +285,6 @@ public class Battler : MonoBehaviour {
     }
     //-----------------------------------------------------------FIXEDUPDATE-----------------------------------------------------
 	void FixedUpdate () {
-
-
-
         // Uncontrolled: ----------------------------------------UNCONTROLLED----------------------------------------------------
         // Staggered 
         if (currentState == Action.STAGGERED)
@@ -371,7 +356,7 @@ public class Battler : MonoBehaviour {
             // Lane Change
             if (movementY != 0)
             {
-                if (movementY >= 1 && position.lane < field.lanes - 1)
+                if (movementY >= 1 && position.lane < battleField.lanes - 1)
                 {
                     laneChange++;
                 }
@@ -408,6 +393,7 @@ public class Battler : MonoBehaviour {
             if (movementX != 0)
             {
                 Debug.Log("Side attack Input!");
+                ExecuteAction(skills.materialSide);
             }
             else if (movementY != 0)
             {
@@ -415,20 +401,29 @@ public class Battler : MonoBehaviour {
                 if (movementY > 0)
                 {
                     Debug.Log("Up attack Input!");
+                    ExecuteAction(skills.materialUp);
                 }//Down Attack
                 else if (movementY < 0)
                 {
                     Debug.Log("Down attack Input!");
+                    ExecuteAction(skills.materialDown);
                 }
             }// Neutral Attack
             else
             {
                 Debug.Log("Basic attack Input!");
-                ExecuteAction(ActionFrameData.BasicAttack);
-                if (thisAnimation)
+                ExecuteAction(AttackParamaters.BasicAttack);
+            }
+
+            if (thisAnimation)
+            {
+                if (currentAttack.animationName != null)
                 {
-                    //thisAnimation.SetInteger("attack", 1);
-                    thisAnimation.Play("basicAttack", -1, 0);
+                    thisAnimation.Play(currentAttack.animationName, -1, 0);
+                }
+                else
+                {
+                    thisAnimation.Play("attackBasic", -1, 0);
                 }
             }
             currentState = Action.ACTING;
@@ -436,7 +431,7 @@ public class Battler : MonoBehaviour {
             attackBasic = false;
         }
 
-        // While Attacking(Acting)
+        // While Attacking(Acting) ==============================================
         if (currentState == Action.ACTING)
         {
             //make PainBoxes on strike frames
@@ -445,14 +440,14 @@ public class Battler : MonoBehaviour {
                 if (execution == i)
                 {
                     // set PainBox
-                    painBoxPrefab.PhysicalAttackHitBox(position, body.width, body.height, facing, 1.0f);
+                    painBoxPrefab.PhysicalAttackHitBox(position, body, currentAttack.effects, facing, 1.0f);
                     painBoxPrefab.alliance = alliance;
 
                     Instantiate(painBoxPrefab);
                 }
             }
             // canAct in combo frames
-            if (execution > currentActionFrames.execution && execution <= currentActionFrames.combo + currentActionFrames.execution)
+            if (execution > currentActionFrames.execution && execution <= currentActionFrames.comboLimit)
             {
                 canAct = true;
             }
@@ -495,14 +490,14 @@ public class Battler : MonoBehaviour {
             velocity.y = 0;
         }
         // Boundries
-        if (position.x < field.leftBarrier)
+        if (position.x < battleField.leftBarrier)
         {
-            position.x = field.leftBarrier;
+            position.x = battleField.leftBarrier;
             velocity.x = 0;
         }
-        if (position.x > field.rightBarrier)
+        if (position.x > battleField.rightBarrier)
         {
-            position.x = field.rightBarrier;
+            position.x = battleField.rightBarrier;
             velocity.x = 0;
         }
         // Position Updating
@@ -523,9 +518,10 @@ public class Battler : MonoBehaviour {
         
         //hitEffect = 1;
     }
-    void ExecuteAction(ActionFrameData p_attack)
+    void ExecuteAction(AttackParamaters p_attack)
     {
-        currentActionFrames = p_attack;
-        action = p_attack.fullFrames;
+        currentAttack = p_attack;
+        currentActionFrames = p_attack.frameData;
+        action = p_attack.frameData.fullFrames;
     }
 }

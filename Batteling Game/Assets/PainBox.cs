@@ -8,6 +8,7 @@ public class PainBox : MonoBehaviour {
     public BattlerCollider hitBox;
 
     public int alliance = 0;
+    public AttackEffects effects = new AttackEffects();
 
     public float linger;
     public int maxHits;
@@ -49,7 +50,7 @@ public class PainBox : MonoBehaviour {
                 if (hitBox.HitTest(i.hurtBox) && i.alliance != alliance)
                 {
                     Debug.Log("Pain Box hit " + i.name + "!");
-                    i.GetHit(Random.Range(0, 0.1f) * facing, 0.1f, 5);
+                    i.GetHit(effects.push * facing, effects.lift, effects.damage);
                     //i.GetHit(0, 0, 5);
                     timesHit++;
                     //resets delay
@@ -68,9 +69,10 @@ public class PainBox : MonoBehaviour {
         hitBox.z = 0;
     }*/
     
-    public void PhysicalAttackHitBox(BattlerPosition battler_position, float battler_width, float battler_height, int battler_facing, float attack_range)
+    public void PhysicalAttackHitBox(BattlerPosition battler_position, BattlerBody battler_body, AttackEffects attack_effects, int battler_facing, float attack_range)
     {
         //thisTrans.position = new Vector3(battler_position.x, battler_position.y, 0);
+        effects = attack_effects;
 
         facing = battler_facing;
         linger = 3;
@@ -79,16 +81,16 @@ public class PainBox : MonoBehaviour {
 
         if (battler_facing == 1)
         {
-            hitBox.x1 = battler_position.x + (battler_width / 2);
-            hitBox.x2 = battler_position.x + ((battler_width / 2) + attack_range);
+            hitBox.x1 = battler_position.x + (battler_body.width / 2);
+            hitBox.x2 = battler_position.x + ((battler_body.width / 2) + attack_range);
         }
         else if (battler_facing == -1)
         {
-            hitBox.x1 = battler_position.x - ((battler_width / 2) + attack_range);
-            hitBox.x2 = battler_position.x - (battler_width / 2);
+            hitBox.x1 = battler_position.x - ((battler_body.width / 2) + attack_range);
+            hitBox.x2 = battler_position.x - (battler_body.width / 2);
         }
         hitBox.y1 = battler_position.y;
-        hitBox.y2 = battler_position.y + battler_height;
+        hitBox.y2 = battler_position.y + battler_body.height;
         hitBox.z = battler_position.lane;
     }
 }
