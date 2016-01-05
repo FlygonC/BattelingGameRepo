@@ -1,0 +1,226 @@
+fileFormatVersion: 2
+guid: 387fe8e2a18efc74eb5b934ac1545cc8
+timeCreated: 1451635323
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: testPlayerIdle
+    21300002: testPlayerJump
+    21300004: testPlayerRun
+    21300006: testPlayerAttack1
+    21300008: testPlayerHurt
+    21300010: testPlayerRun1
+    21300012: testPlayerRun2
+    21300014: testPlayerRun3
+    21300016: testPlayerRun4
+    21300018: testPlayerRun5
+    21300020: testPlayerRun6
+    21300022: testPlayerRun7
+    21300024: testPlayerRun8
+    21300026: testPlayerAttack2
+    21300028: testPlayerAttack3
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -3
+  maxTextureSize: 512
+  textureSettings:
+    filterMode: 0
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 20
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: testPlayerIdle
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 414
+        width: 24
+        height: 23
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: testPlayerJump
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 409
+        width: 20
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: testPlayerAttack1
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 415
+        width: 34
+        height: 23
+      alignment: 9
+      pivot: {x: 0.38, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: testPlayerHurt
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 373
+        width: 21
+        height: 27
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: testPlayerRun1
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 298
+        width: 19
+        height: 24
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: testPlayerRun2
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 298
+        width: 25
+        height: 23
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: testPlayerRun3
+      rect:
+        serializedVersion: 2
+        x: 61
+        y: 297
+        width: 26
+        height: 22
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: testPlayerRun4
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 298
+        width: 21
+        height: 23
+      alignment: 9
+      pivot: {x: 0.44, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: testPlayerRun5
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 298
+        width: 18
+        height: 23
+      alignment: 9
+      pivot: {x: 0.54, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: testPlayerRun6
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 298
+        width: 27
+        height: 24
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: testPlayerRun7
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 299
+        width: 30
+        height: 24
+      alignment: 9
+      pivot: {x: 0.55, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: testPlayerRun8
+      rect:
+        serializedVersion: 2
+        x: 206
+        y: 297
+        width: 24
+        height: 24
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: testPlayerAttack2
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 415
+        width: 34
+        height: 23
+      alignment: 9
+      pivot: {x: 0.38, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: testPlayerAttack3
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 415
+        width: 34
+        height: 23
+      alignment: 9
+      pivot: {x: 0.38, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

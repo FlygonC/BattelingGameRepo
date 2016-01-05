@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: afa0fa1c87ad45648beb3553cfd48df0
+timeCreated: 1451698666
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - painBoxPrefab: {fileID: 11437976, guid: 89cfdf6385f090c43a39087483f50f7f, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

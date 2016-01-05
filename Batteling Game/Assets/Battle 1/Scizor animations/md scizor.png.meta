@@ -1,0 +1,297 @@
+fileFormatVersion: 2
+guid: 3ddb05d8ebd205c4dab91eb7cebdaa83
+timeCreated: 1451426492
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: scizIdle
+    21300002: md scizor_0
+    21300004: md scizor_1
+    21300006: md scizor_2
+    21300008: md scizor_3
+    21300010: md scizor_4
+    21300012: md scizor_5
+    21300014: md scizor_6
+    21300016: md scizor_7
+    21300018: md scizor_8
+    21300020: md scizor_9
+    21300022: md scizor_10
+    21300024: md scizor_11
+    21300026: md scizor_12
+    21300028: md scizor_13
+    21300030: md scizor_14
+    21300032: md scizor_15
+    21300034: md scizor_16
+    21300036: md scizor_17
+    21300038: md scizor_18
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 8
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -3
+  maxTextureSize: 1024
+  textureSettings:
+    filterMode: 0
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 20
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: scizIdle
+      rect:
+        serializedVersion: 2
+        x: 126
+        y: 251
+        width: 29
+        height: 27
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_0
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 245
+        width: 25
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_1
+      rect:
+        serializedVersion: 2
+        x: 334
+        y: 242
+        width: 21
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_2
+      rect:
+        serializedVersion: 2
+        x: 365
+        y: 237
+        width: 22
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_3
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 242
+        width: 20
+        height: 31
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 284
+        width: 29
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_5
+      rect:
+        serializedVersion: 2
+        x: 301
+        y: 284
+        width: 25
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_6
+      rect:
+        serializedVersion: 2
+        x: 334
+        y: 282
+        width: 21
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_7
+      rect:
+        serializedVersion: 2
+        x: 365
+        y: 279
+        width: 26
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_8
+      rect:
+        serializedVersion: 2
+        x: 399
+        y: 282
+        width: 21
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_9
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 215
+        width: 20
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_10
+      rect:
+        serializedVersion: 2
+        x: 295
+        y: 204
+        width: 23
+        height: 31
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_11
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 205
+        width: 25
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_12
+      rect:
+        serializedVersion: 2
+        x: 359
+        y: 204
+        width: 33
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_13
+      rect:
+        serializedVersion: 2
+        x: 399
+        y: 204
+        width: 29
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_14
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 166
+        width: 23
+        height: 31
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_15
+      rect:
+        serializedVersion: 2
+        x: 326
+        y: 169
+        width: 25
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_16
+      rect:
+        serializedVersion: 2
+        x: 359
+        y: 169
+        width: 33
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_17
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 169
+        width: 29
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: md scizor_18
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 181
+        width: 20
+        height: 29
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
