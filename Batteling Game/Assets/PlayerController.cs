@@ -41,6 +41,7 @@ public class PlayerController : MonoBehaviour {
 
         //inControl.GetComponent<Battler>().jump = Input.GetButton("Fire1");
         inControl.GetComponent<Battler>().attackBasic = Input.GetButton("Fire1");
+        inControl.GetComponent<Battler>().matSkill = Input.GetButton("Fire2");
     }
 
     void ChangeControl()

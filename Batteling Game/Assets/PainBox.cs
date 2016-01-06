@@ -25,7 +25,7 @@ public class PainBox : MonoBehaviour {
 
         objectsToHit = FindObjectsOfType<Battler>();
 
-        Debug.Log("Pain Box born.");
+        //Debug.Log("Pain Box born.");
 	}
 	
 	// Update is called once per frame
@@ -49,7 +49,7 @@ public class PainBox : MonoBehaviour {
             {
                 if (hitBox.HitTest(i.hurtBox) && i.alliance != alliance)
                 {
-                    Debug.Log("Pain Box hit " + i.name + "!");
+                    //Debug.Log("Pain Box hit " + i.name + "!");
                     i.GetHit(effects.push * facing, effects.lift, effects.damage);
                     //i.GetHit(0, 0, 5);
                     timesHit++;

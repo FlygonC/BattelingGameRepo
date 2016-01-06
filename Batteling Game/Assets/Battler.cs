@@ -122,6 +122,7 @@ public class CharacterStats
 }
 public class CharacterSkills
 {
+    public AttackParamaters materialNeutral = AttackParamaters.BasicAttack;
     public AttackParamaters materialUp = AttackParamaters.BasicAttack;
     public AttackParamaters materialSide = AttackParamaters.BasicAttack;
     public AttackParamaters materialDown = AttackParamaters.BasicAttack;
@@ -167,6 +168,7 @@ public class Battler : MonoBehaviour {
     private int laneChange;
     //public bool jump = false;
     public bool attackBasic = false;
+    public bool matSkill = false;
     // Action timing variables
     private Action currentState = Action.NEUTRAL;
     private float action;
@@ -385,6 +387,14 @@ public class Battler : MonoBehaviour {
         // Using a Basic Attack ---------------------------------ATTACKING-------------------------------------------------------
         if (attackBasic && canAct)
         {
+            Debug.Log("Basic attack Input!");
+            ExecuteAction(AttackParamaters.BasicAttack);
+            
+            attackBasic = false;
+        }
+        // Using a Mat Skill ------------------------
+        if (matSkill && canAct)
+        {
             // Side attack
             if (movementX != 0)
             {
@@ -407,24 +417,11 @@ public class Battler : MonoBehaviour {
             }// Neutral Attack
             else
             {
-                Debug.Log("Basic attack Input!");
-                ExecuteAction(AttackParamaters.BasicAttack);
+                Debug.Log("Neutral attack Input!");
+                ExecuteAction(skills.materialNeutral);
             }
 
-            if (thisAnimation)
-            {
-                if (currentAttack.animationName != null)
-                {
-                    thisAnimation.Play(currentAttack.animationName, -1, 0);
-                }
-                else
-                {
-                    thisAnimation.Play("attackBasic", -1, 0);
-                }
-            }
-            currentState = Action.ACTING;
-            execution = 0;
-            attackBasic = false;
+            matSkill = false;
         }
 
         // While Attacking(Acting) ==============================================
@@ -464,7 +461,7 @@ public class Battler : MonoBehaviour {
                 {
                     float xDif = position.x - other.position.x;//from other
                     float compWidth = (body.width / 2) + (other.body.width / 2);
-                    float weightDif = body.weight - other.body.weight;
+                    //float weightDif = body.weight - other.body.weight;
 
                     if (xDif < 0)
                     {
@@ -508,6 +505,7 @@ public class Battler : MonoBehaviour {
     {
         healthPoints -= damage;
         action = 30;
+        execution = 0;
         currentState = Action.STAGGERED;
         velocity = new Vector2(xPush, yPush) / body.weight;
         thisAnimation.Play("hurt", -1, 0);
@@ -519,5 +517,19 @@ public class Battler : MonoBehaviour {
         currentAttack = p_attack;
         currentActionFrames = p_attack.frameData;
         action = p_attack.frameData.fullFrames;
+
+        if (thisAnimation)
+        {
+            if (currentAttack.animationName != null)
+            {
+                thisAnimation.Play(currentAttack.animationName, -1, 0);
+            }
+            else
+            {
+                thisAnimation.Play("attackBasic", -1, 0);
+            }
+        }
+        currentState = Action.ACTING;
+        execution = 0;
     }
 }
