@@ -3,6 +3,7 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour {
 
+    [Tooltip("Drag a Battler from the hierarchy here to change control.")]
     public GameObject inControl;
 
 	// Use this for initialization

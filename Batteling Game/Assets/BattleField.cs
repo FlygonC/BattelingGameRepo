@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BattleField : MonoBehaviour {
+public class BattleField {
 
     [Range(1,5)]
-    public int lanes = 1;
+    public int lanes = 3;
     public float width = 10;
 
     public float leftBarrier
@@ -22,13 +22,5 @@ public class BattleField : MonoBehaviour {
         }
     }
 
-	// Use this for initialization
-	void Start () {
-        this.gameObject.tag = "BattleField";
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
 }

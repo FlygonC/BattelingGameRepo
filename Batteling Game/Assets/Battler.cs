@@ -137,8 +137,6 @@ public class Battler : MonoBehaviour {
     private Animator thisAnimation;
     private Transform thisTransform;
     public PainBox painBoxPrefab;
-    private BattleField battleField;
-    //private PainBox painBoxVars;
     // Battle Variables
     public int alliance = 0;
     public float healthPoints = 100;
@@ -214,7 +212,6 @@ public class Battler : MonoBehaviour {
             }
         }
     }
-    private Battler[] otherBattlers;
     // Extra Stuff
     //public float hitEffect = 0;
     //-----------------------------------------------------------START-----------------------------------------------------------
@@ -235,20 +232,18 @@ public class Battler : MonoBehaviour {
         // Position Starting
         thisTransform = GetComponent<Transform>();
         thisTransform.position = position.XYZ;
-        // BattleField
-        battleField = GameObject.FindGameObjectWithTag("BattleField").GetComponent<BattleField>();
 
-        // TEMPORARY-TEMPORARY-TEMPORARY-TEMPORARY-TEMPORARY-TEMPORARY-
+        // TEMPORARY-TEMPORARY-TEMPORARY-TEMPORARY-TEMPORARY-TEMPORARY-TEMPORARY-TEMPORARY-TEMPORARY-
         AttackParamaters testAttack1 = new AttackParamaters();
         AttackEffects testEffects1 = new AttackEffects();
-        testEffects1.push = 0.08f;
+        testEffects1.push = 0.1f;
         testEffects1.lift = 0;
         testEffects1.damage = 10;
         ActionFrameData testFrameData1 = new ActionFrameData();
         testFrameData1.execution = 30;
         testFrameData1.combo = 15;
         testFrameData1.lag = 15;
-        testFrameData1.strikeFrames = new int[1] { 16 };
+        testFrameData1.strikeFrames = new int[2] { 15, 25 };
 
         testAttack1.frameData = testFrameData1;
         testAttack1.effects = testEffects1;
@@ -273,6 +268,7 @@ public class Battler : MonoBehaviour {
         //testAttack2.animationName = "attackBasic";
 
         skills.materialUp = testAttack2;
+        // END TEMPORARY
     }
     //-----------------------------------------------------------UPDATE----------------------------------------------------------
     void Update()
@@ -283,7 +279,7 @@ public class Battler : MonoBehaviour {
             hitEffect -= Time.deltaTime * 8;
         }*/
     }
-    //-----------------------------------------------------------FIXEDUPDATE-----------------------------------------------------
+    //===========================================================FIXEDUPDATE=====================================================
 	void FixedUpdate () {
         // Uncontrolled: ----------------------------------------UNCONTROLLED----------------------------------------------------
         // Staggered 
@@ -356,7 +352,7 @@ public class Battler : MonoBehaviour {
             // Lane Change
             if (movementY != 0)
             {
-                if (movementY >= 1 && position.lane < battleField.lanes - 1)
+                if (movementY >= 1 && position.lane < BattleManager.Manager.field.lanes - 1)
                 {
                     laneChange++;
                 }
@@ -459,8 +455,8 @@ public class Battler : MonoBehaviour {
         }
         // UnControlled2 ----------------------------------------UNCONTROLLED2---------------------------------------------------
         // Push other Battlers
-        otherBattlers = FindObjectsOfType<Battler>();
-        foreach (Battler other in otherBattlers)
+        //otherBattlers = FindObjectsOfType<Battler>();
+        foreach (Battler other in BattleManager.Manager.allBattlers)
         {
             if (other != this)
             {
@@ -490,14 +486,14 @@ public class Battler : MonoBehaviour {
             velocity.y = 0;
         }
         // Boundries
-        if (position.x < battleField.leftBarrier)
+        if (position.x < BattleManager.Manager.field.leftBarrier)
         {
-            position.x = battleField.leftBarrier;
+            position.x = BattleManager.Manager.field.leftBarrier;
             velocity.x = 0;
         }
-        if (position.x > battleField.rightBarrier)
+        if (position.x > BattleManager.Manager.field.rightBarrier)
         {
-            position.x = battleField.rightBarrier;
+            position.x = BattleManager.Manager.field.rightBarrier;
             velocity.x = 0;
         }
         // Position Updating
