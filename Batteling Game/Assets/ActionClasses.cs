@@ -65,14 +65,6 @@ public class AttackEffects
 [System.Serializable]
 public class AttackParamaters
 {
-    private Battler AttackUser;
-    public Battler attackUser
-    {
-        set
-        {
-            AttackUser = value;
-        }
-    }
     public AttackEffects effects;
     
     //public AttackHitBox hitbox;

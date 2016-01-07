@@ -7,7 +7,7 @@ public class PainBox : MonoBehaviour {
 
     public BattlerCollider hitBox;
 
-    public int alliance = 0;
+    public Battler.Alliance alliance = Battler.Alliance.PLAYER;
     public AttackEffects effects = new AttackEffects();
 
     public float linger;

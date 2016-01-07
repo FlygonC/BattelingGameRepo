@@ -133,13 +133,13 @@ public class CharacterSkills
 public class Battler : MonoBehaviour {
     //-----------------------------------------------------------BATTLER---------------------------------------------------------
     public enum Action { NEUTRAL = 0, ACTING, STAGGERED }
+    public enum Alliance { UNALIENED = 0, PLAYER, ENEMY }
     
     private SpriteRenderer thisRenderer;
     private Animator thisAnimation;
     private Transform thisTransform;
-    public PainBox painBoxPrefab;
     // Battle Variables
-    public int alliance = 0;
+    public Alliance alliance = Alliance.PLAYER;
     public float healthPoints = 100;
     public CharacterSkills skills = new CharacterSkills();
     // Movement variables
@@ -169,13 +169,14 @@ public class Battler : MonoBehaviour {
     //public bool jump = false;
     public bool attackBasic = false;
     public bool matSkill = false;
-    // Action timing variables
+    // Action variables
     private Action currentState = Action.NEUTRAL;
     private float action;
     private float execution;
     private bool canAct = true;
     private ActionFrameData currentActionFrames;
     private AttackParamaters currentAttack;
+    private BattlerCollider attachedHitBox = new BattlerCollider();
     // Collision Variables
     public BattlerBody body;
     public BattlerCollider hurtBox
@@ -199,6 +200,20 @@ public class Battler : MonoBehaviour {
         get
         {
             return new Vector2(position.x, position.y + (body.height / 2));
+        }
+    }
+    public float rightSide
+    {
+        get
+        {
+            return position.x + (body.width / 2);
+        }
+    }
+    public float leftSide
+    {
+        get
+        {
+            return position.x - (body.width / 2);
         }
     }
     public int facing
@@ -424,19 +439,26 @@ public class Battler : MonoBehaviour {
             matSkill = false;
         }
 
-        // While Attacking(Acting) ==============================================
+        // While Attacking(Acting) ==============================WHILEACTING=====================================================
         if (currentState == Action.ACTING)
         {
-            //make PainBoxes on strike frames
+            //make hits on strike frames
             foreach (int i in currentActionFrames.strikeFrames)
             {
                 if (execution == i)
                 {
-                    // set PainBox
-                    painBoxPrefab.PhysicalAttackHitBox(position, body, currentAttack.effects, facing, 1.0f);
-                    painBoxPrefab.alliance = alliance;
-
-                    Instantiate(painBoxPrefab);
+                    SetAttHitBox(1.0f);
+                    // Hit other battlers
+                    foreach (Battler other in BattleManager.Manager.allBattlers)
+                    {
+                        if (other != this && other.alliance != alliance)
+                        {
+                            if (attachedHitBox.HitTest(other.hurtBox))
+                            {
+                                other.GetHit(currentAttack.effects.push * facing, currentAttack.effects.lift, currentAttack.effects.damage);
+                            }
+                        }
+                    }
                 }
             }
             // canAct in combo frames
@@ -531,5 +553,23 @@ public class Battler : MonoBehaviour {
         }
         currentState = Action.ACTING;
         execution = 0;
+    }
+
+    void SetAttHitBox(float a_range)
+    {
+        attachedHitBox.y1 = position.y;
+        attachedHitBox.y2 = position.y + body.height;
+        attachedHitBox.z = position.z;
+
+        if (facing > 0)
+        {
+            attachedHitBox.x1 = rightSide;
+            attachedHitBox.x2 = rightSide + a_range;
+        }
+        else if ( facing < 0)
+        {
+            attachedHitBox.x1 = leftSide - a_range;
+            attachedHitBox.x2 = leftSide;
+        }
     }
 }
