@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 387fe8e2a18efc74eb5b934ac1545cc8
-timeCreated: 1451635323
-licenseType: Free
+timeCreated: 1452201703
+licenseType: Pro
 TextureImporter:
   fileIDToRecycleName:
     21300000: testPlayerIdle
@@ -19,6 +19,7 @@ TextureImporter:
     21300024: testPlayerRun8
     21300026: testPlayerAttack2
     21300028: testPlayerAttack3
+    21300030: 8bitsamus2xv_0
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -217,6 +218,17 @@ TextureImporter:
         height: 23
       alignment: 9
       pivot: {x: 0.38, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: 8bitsamus2xv_0
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 337
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
     outline: []

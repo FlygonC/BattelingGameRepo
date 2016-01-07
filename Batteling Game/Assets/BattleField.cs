@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[System.Serializable]
 public class BattleField {
 
     [Range(1,5)]
     public int lanes = 3;
-    public float width = 10;
+    public float width = 20;
 
     public float leftBarrier
     {

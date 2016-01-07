@@ -130,10 +130,11 @@ public class CharacterSkills
 
 
 //-------------------------------------------------------------------------------------------------------------------------------
+[DisallowMultipleComponent]
 public class Battler : MonoBehaviour {
     //-----------------------------------------------------------BATTLER---------------------------------------------------------
     public enum Action { NEUTRAL = 0, ACTING, STAGGERED }
-    public enum Alliance { UNALIENED = 0, PLAYER, ENEMY }
+    public enum Alliance { UNALIENED = -1, PLAYER, ENEMY }
     
     private SpriteRenderer thisRenderer;
     private Animator thisAnimation;
@@ -216,19 +217,7 @@ public class Battler : MonoBehaviour {
             return position.x - (body.width / 2);
         }
     }
-    public int facing
-    {
-        get
-        {
-            if (thisRenderer.flipX)
-            {
-                return -1;
-            } else
-            {
-                return 1;
-            }
-        }
-    }
+    public int facing = 1;
     // Extra Stuff
     //public float hitEffect = 0;
     //-----------------------------------------------------------START-----------------------------------------------------------
@@ -272,7 +261,7 @@ public class Battler : MonoBehaviour {
         AttackParamaters testAttack2 = new AttackParamaters();
         AttackEffects testEffects2 = new AttackEffects();
         testEffects2.push = 0;
-        testEffects2.lift = 0.1f;
+        testEffects2.lift = 0.7f;
         testEffects2.damage = 10;
         ActionFrameData testFrameData2 = new ActionFrameData();
         testFrameData2.execution = 10;
@@ -290,6 +279,20 @@ public class Battler : MonoBehaviour {
     //-----------------------------------------------------------UPDATE----------------------------------------------------------
     void Update()
     {
+        if (facing != 0)
+        {
+            if (facing > 0)
+            {
+                thisTransform.rotation = new Quaternion(0, 0, 0, 0);
+            }
+            else if (facing < 0)
+            {
+                thisTransform.rotation = new Quaternion(0, 180, 0, 0);
+            }
+        } else
+        {
+            facing = 1;
+        }
         /*if (hitEffect > 0)
         {
             thisRenderer.color = Color.Lerp(Color.white, Color.red * 2, hitEffect);
@@ -355,15 +358,14 @@ public class Battler : MonoBehaviour {
             // Moving
             if (movementX != 0)
             {
+                facing = movementX;
                 if (movementX >= 1)
                 {
                     position.x += moveSpeed;
-                    thisRenderer.flipX = false;
                 }
                 else if (movementX <= -1)
                 {
                     position.x -= moveSpeed;
-                    thisRenderer.flipX = true;
                 }
             }
             // Lane Change
