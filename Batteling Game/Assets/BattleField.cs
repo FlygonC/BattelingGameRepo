@@ -6,7 +6,7 @@ public class BattleField {
 
     [Range(1,5)]
     public int lanes = 3;
-    public float width = 20;
+    public float width = 16;
 
     public float leftBarrier
     {

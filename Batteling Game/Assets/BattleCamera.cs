@@ -10,7 +10,7 @@ public class BattleCamera : MonoBehaviour {
     {
         get
         {
-            return new Vector3(X, Y - (Z / 5), Z);
+            return new Vector3(X, Y - (Z / 10), Z);
         }
     }
     private Vector3 currentFinalDif
@@ -31,11 +31,21 @@ public class BattleCamera : MonoBehaviour {
         }
     }
 
+    private float aspect
+    {
+        get
+        {
+            return (float)Screen.width / Screen.height;
+        }
+    }
+
     public float zoomMinimum = -3.5f;
     [Range(0,1)]
-    public float persistence = 0.5f;
+    public float persistence = 0.15f;
+    [Range(0, 1)]
+    public float closness = 0.8f;
 
-	void Start () {
+    void Start () {
 	    
 	}
 	
@@ -50,7 +60,7 @@ public class BattleCamera : MonoBehaviour {
         {
             X += i.position.x;
             Y += i.body.height / 2;
-            Z += i.position.z;
+            //Z += i.position.z;
             if (i.position.x < furthestLeft)
             {
                 furthestLeft = i.position.x;
@@ -60,9 +70,9 @@ public class BattleCamera : MonoBehaviour {
                 furthestRight = i.position.x;
             }
         }
-        X = X / BattleManager.Manager.allBattlers.Length;
+        X = furthestLeft + (furthestDif / 2);
         Y = (Y / BattleManager.Manager.allBattlers.Length);
-        Z = (Z / BattleManager.Manager.allBattlers.Length) - (Mathf.Max(zoomMinimum, furthestDif));
+        Z = -(Mathf.Max(zoomMinimum, furthestDif)) / (aspect * closness);
 
         // Set Position
         this.transform.position += currentFinalDif * persistence;
