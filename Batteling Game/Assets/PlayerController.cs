@@ -41,6 +41,7 @@ public class PlayerController : MonoBehaviour {
         
         inControl.attackBasic = Input.GetButton("Fire1");
         inControl.matSkill = Input.GetButton("Fire2");
+        inControl.defend = Input.GetButton("Fire3");
 
 
         this.transform.position = new Vector3(inControl.position.x, inControl.position.y + inControl.body.height + 0.15f, inControl.position.z);

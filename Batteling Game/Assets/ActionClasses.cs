@@ -31,7 +31,7 @@ public class ActionFrameData
             ActionFrameData ret = new ActionFrameData();
             ret.execution = 15;
             ret.combo = 15;
-            ret.lag = 30;
+            ret.lag = 5;
             ret.strikeFrames = new int[1] { 15 };
 
             return ret;

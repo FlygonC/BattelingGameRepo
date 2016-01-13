@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: d403be9192d381f458a31403579d11db
-timeCreated: 1452187366
-licenseType: Pro
+timeCreated: 1452641843
+licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
     21300000: lloyd_0
@@ -184,17 +184,17 @@ TextureImporter:
         y: 509
         width: 51
         height: 44
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+      alignment: 9
+      pivot: {x: 0.5, y: 0.091991074}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline:
-      - - {x: -13.5, y: 44}
-        - {x: -25.5, y: 19}
-        - {x: -25.5, y: 0}
-        - {x: 6.5, y: 0}
-        - {x: 25.5, y: 4}
-        - {x: 25.5, y: 28}
-        - {x: 10.5, y: 44}
+      - - {x: -13.5, y: 39.952393}
+        - {x: -25.5, y: 14.952393}
+        - {x: -25.5, y: -4.0476074}
+        - {x: 6.5, y: -4.0476074}
+        - {x: 25.5, y: -0.047607422}
+        - {x: 25.5, y: 23.952393}
+        - {x: 10.5, y: 39.952393}
     - name: lloyd_1
       rect:
         serializedVersion: 2
