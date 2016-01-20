@@ -50,7 +50,7 @@ public class PainBox : MonoBehaviour {
                 if (hitBox.HitTest(i.hurtBox) && i.alliance != alliance)
                 {
                     //Debug.Log("Pain Box hit " + i.name + "!");
-                    i.GetHit(effects.push * facing, effects.lift, effects.damage);
+                    //i.GetHit(effects.push * facing, effects.lift, effects.damage);
                     //i.GetHit(0, 0, 5);
                     timesHit++;
                     //resets delay

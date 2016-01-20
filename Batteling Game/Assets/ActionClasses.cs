@@ -45,7 +45,8 @@ public class AttackHitBox
 [System.Serializable]
 public class AttackEffects
 {
-    public float damage;
+    //public DamageType
+    public float damageRatio;
     public float lift;
     public float push;
 
@@ -54,7 +55,7 @@ public class AttackEffects
         get
         {
             AttackEffects ret = new AttackEffects();
-            ret.damage = 5;
+            ret.damageRatio = 0.4f;
             ret.lift = 0;
             ret.push = 0;
 
@@ -63,7 +64,7 @@ public class AttackEffects
     }
 }
 [System.Serializable]
-public class AttackParamaters
+public class MaterialSkillBasic
 {
     public AttackEffects effects;
     
@@ -71,11 +72,11 @@ public class AttackParamaters
     public ActionFrameData frameData;
     public string animationName = "basicAttack";
 
-    public static AttackParamaters BasicAttack
+    public static MaterialSkillBasic BasicAttack
     {
         get
         {
-            AttackParamaters ret = new AttackParamaters();
+            MaterialSkillBasic ret = new MaterialSkillBasic();
             ret.frameData = ActionFrameData.BasicAttack;
             ret.effects = AttackEffects.BasicAttack;
             ret.animationName = "basicAttack";

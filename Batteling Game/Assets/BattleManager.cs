@@ -5,6 +5,8 @@ public class BattleManager : MonoBehaviour {
 
     public static BattleManager Manager;
 
+    public GameObject DamageTracePrefab;
+
     private Battler[] AllBattlers;
     public Battler[] allBattlers
     {
@@ -21,6 +23,8 @@ public class BattleManager : MonoBehaviour {
             return Field;
         }
     }
+
+    
 
 	// Use this for initialization
 	void Start () {
@@ -42,4 +46,17 @@ public class BattleManager : MonoBehaviour {
 	void Update () {
 	    
 	}
+
+    public void TraceDamage(Vector3 a_position, float a_display)
+    {
+        DamageTracePrefab.transform.position = a_position + new Vector3(0, 0, -0.1f);
+        DamageTracePrefab.GetComponent<DamageText>().display = a_display.ToString();
+        GameObject.Instantiate(DamageTracePrefab);
+    }
+    public void TraceTotal(Vector3 a_position, float a_damage)
+    {
+        DamageTracePrefab.transform.position = a_position + new Vector3(0, 0, -0.1f);
+        DamageTracePrefab.GetComponent<DamageText>().display = "Total " + a_damage.ToString();
+        GameObject.Instantiate(DamageTracePrefab);
+    }
 }

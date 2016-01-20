@@ -77,18 +77,9 @@ public class BattlerBody
 {
     public float width = 1;
     public float height = 1;
-    public float density = 1;
+    //public float density = 1;
+    public float weight = 1;
 
-    public float weight
-    {
-        get
-        {
-            float ret = 0;
-            ret += (width + height) / 2;
-            ret *= density;
-            return ret;
-        }
-    }
     public float scale
     {
         get
@@ -101,41 +92,11 @@ public class BattlerBody
 }
 
 
-public class CharacterStats
+public struct DamageCVars
 {
-    public int level = 1;
-
-    private int StrengthLevel = 0;
-    public int strength
-    {
-        get
-        {
-            return level + StrengthLevel + 4;
-        }
-    }
-    private int MagicLevel = 0;
-    public int magic
-    {
-        get
-        {
-            return level + MagicLevel + 4;
-        }
-    }
-    private int AgilityLevel = 0;
-    public int agility
-    {
-        get
-        {
-            return level + AgilityLevel + 4;
-        }
-    }
-}
-public class CharacterSkills
-{
-    public AttackParamaters materialNeutral = AttackParamaters.BasicAttack;
-    public AttackParamaters materialUp = AttackParamaters.BasicAttack;
-    public AttackParamaters materialSide = AttackParamaters.BasicAttack;
-    public AttackParamaters materialDown = AttackParamaters.BasicAttack;
+    //type
+    public float amount;
+    public float attackerAcc;
 }
 
 
@@ -149,10 +110,84 @@ public class Battler : MonoBehaviour {
     private SpriteRenderer thisRenderer;
     private Animator thisAnimation;
     private Transform thisTransform;
+
     // Battle Variables
     public Alliance alliance = Alliance.PLAYER;
-    public float healthPoints = 100;
-    public CharacterSkills skills = new CharacterSkills();
+    public Character character = new Character();
+    public CharacterSkills skills
+    {
+        get
+        {
+            return character.skills;
+        }
+    }
+    public float hitPoints
+    {
+        get
+        {
+            return character.hp;
+        }
+        set
+        {
+            character.hp = Mathf.Clamp(value, 0, character.hpMax);
+        }
+    }
+
+    public Stats statsModifier = new Stats();
+
+    public float attackDamage
+    {
+        get
+        {
+            return Mathf.Round(character.attackDamage * statsModifier.attackDamage);
+        }
+    }
+    public float magicDamage
+    {
+        get
+        {
+            return Mathf.Round(character.magicDamage * statsModifier.magicDamage);
+        }
+    }
+    public float armor
+    {
+        get
+        {
+            return character.armor;
+        }
+    }
+    public float speed
+    {
+        get
+        {
+            return character.speed;
+        }
+    }
+
+    public float accuracy
+    {
+        get
+        {
+            return 1;
+        }
+    }
+    public float evade
+    {
+        get
+        {
+            return 1;
+        }
+    }
+
+
+    public float maxEndurance
+    {
+        get { return Mathf.Round(character.hpMax / 10); }
+    }
+    public float endurance = 0;
+
+    public float effectiveBlock = 0.75f;
+
     // Movement variables
     public BattlerPosition position;
     private float softZ;
@@ -189,10 +224,13 @@ public class Battler : MonoBehaviour {
     private bool canAttack = true;
     private bool defending = false;
     private ActionFrameData currentActionFrames;
-    private AttackParamaters currentAttack;
+    private MaterialSkillBasic currentAttack;
     private BattlerCollider attachedHitBox = new BattlerCollider();
     public float actionPoints = 4;
-    public float actionPointsMax = 4;
+    public float actionPointsMax
+    {
+        get { return Mathf.Round((Mathf.Pow(speed, 0.6f) / 5) + 1); }
+    }
     private bool canAction
     {
         get
@@ -210,11 +248,11 @@ public class Battler : MonoBehaviour {
             return ret.SetBoxByCenter(center, position.z, body.width, body.height);
         }
     }
-    public Vector2 center
+    public Vector3 center
     {
         get
         {
-            return new Vector2(position.x, position.y + (body.height / 2));
+            return new Vector3(position.x, position.y + (body.height / 2), position.z);
         }
     }
     public float rightSide
@@ -233,6 +271,10 @@ public class Battler : MonoBehaviour {
     }
     public int facing = 1;
     // Extra Stuff
+    private int comboHits = 0;
+    private float comboDamage = 0;
+    private float comboTime = 0;
+    private bool combo = false;
     //public float hitEffect = 0;
     //-----------------------------------------------------------START-----------------------------------------------------------
     void Start ()
@@ -253,43 +295,12 @@ public class Battler : MonoBehaviour {
         thisTransform = GetComponent<Transform>();
         thisTransform.position = position.XYZ;
         softZ = position.z;
-
         // TEMPORARY-TEMPORARY-TEMPORARY-TEMPORARY-TEMPORARY-TEMPORARY-TEMPORARY-TEMPORARY-TEMPORARY-
-        AttackParamaters testAttack1 = new AttackParamaters();
-        AttackEffects testEffects1 = new AttackEffects();
-        testEffects1.push = 0.1f;
-        testEffects1.lift = 0;
-        testEffects1.damage = 10;
-        ActionFrameData testFrameData1 = new ActionFrameData();
-        testFrameData1.execution = 25;
-        testFrameData1.combo = 5;
-        testFrameData1.lag = 5;
-        testFrameData1.strikeFrames = new int[2] { 15, 25 };
-
-        testAttack1.frameData = testFrameData1;
-        testAttack1.effects = testEffects1;
-        testAttack1.animationName = "thrust";
-
-        skills.materialDown = testAttack1;
-        skills.materialSide = testAttack1;
-        // UP
-        AttackParamaters testAttack2 = new AttackParamaters();
-        AttackEffects testEffects2 = new AttackEffects();
-        testEffects2.push = 0;
-        testEffects2.lift = 0.7f;
-        testEffects2.damage = 10;
-        ActionFrameData testFrameData2 = new ActionFrameData();
-        testFrameData2.execution = 10;
-        testFrameData2.combo = 45;
-        testFrameData2.lag = 1;
-        testFrameData2.strikeFrames = new int[1] { 5 };
-
-        testAttack2.frameData = testFrameData2;
-        testAttack2.effects = testEffects2;
-        //testAttack2.animationName = "attackBasic";
-
-        skills.materialUp = testAttack2;
+        character.skills = CharacterSkills.TestSkills;
         // END TEMPORARY
+        hitPoints = character.hpMax;
+        statsModifier.SetAll(1);
+        endurance = maxEndurance;
     }
     //-----------------------------------------------------------UPDATE----------------------------------------------------------
     void Update()
@@ -313,6 +324,29 @@ public class Battler : MonoBehaviour {
             thisRenderer.color = Color.Lerp(Color.white, Color.red * 2, hitEffect);
             hitEffect -= Time.deltaTime * 8;
         }*/
+        // Combo Damage
+        if (comboTime > 0)
+        {
+            comboTime -= Time.deltaTime;
+        }
+        if (comboHits >= 2 && comboDamage > 0)
+        {
+            combo = true;
+        }
+        if (combo == true && comboTime <= 0)
+        {
+            BattleManager.Manager.TraceTotal(center + new Vector3(0, body.height / 2, 0), comboDamage);
+        }
+        if (comboHits > 2)
+        {
+            comboHits = 0;
+        }
+        if (comboTime <= 0)
+        {
+            combo = false;
+            comboHits = 0;
+            comboDamage = 0;
+        }
     }
     //===========================================================FIXEDUPDATE=====================================================
 	void FixedUpdate () {
@@ -321,6 +355,20 @@ public class Battler : MonoBehaviour {
         if (currentState == Action.STAGGERED)
         {
             canAttack = false;
+            //thisRenderer.color = new Color(1, 1, 1, 0.25f);
+        }
+        // Endurance
+        if (endurance < maxEndurance)
+        {
+            endurance += maxEndurance / (60);
+            if (endurance >= maxEndurance)
+            {
+                endurance = maxEndurance;
+            }
+        }
+        if (endurance < 0)
+        {
+            endurance = 0;
         }
         // Action Time
         if (action > 0)
@@ -371,12 +419,21 @@ public class Battler : MonoBehaviour {
         {
             if (actionPoints < actionPointsMax)
             {
-                actionPoints += 1.0f / (60.0f);
+                if (!defending)
+                {
+                    actionPoints += 1.0f / (60.0f);
+                }
+                else
+                {
+                    actionPoints += 0.5f / (60.0f);
+                }
             }
-            if (actionPoints >= actionPointsMax)
+            /*if (actionPoints >= actionPointsMax)
             {
                 actionPoints = actionPointsMax;
-            }
+            }*/
+            // TEMPORARY
+            //hitPoints += 10;
         }
         // Ground Friction
         if (airborne == false)
@@ -423,10 +480,28 @@ public class Battler : MonoBehaviour {
                         actionPoints -= 1;
                     }
                 }
+                // block diminish
+                if (effectiveBlock > 0)
+                {
+                    effectiveBlock -= 0.75f / (60 * 3);
+                    if (effectiveBlock < 0)
+                    {
+                        effectiveBlock = 0;
+                    }
+                }
             }
             else
             {// Not Defending(Normal Movement) ================================
                 defending = false;
+                // Block restore
+                if (effectiveBlock < 0.75f)
+                {
+                    effectiveBlock += 0.75f / (60 * 3);
+                    if (effectiveBlock > 0.75f)
+                    {
+                        effectiveBlock = 0.75f;
+                    }
+                }
                 // Moving
                 if (movementX != 0)
                 {
@@ -478,11 +553,11 @@ public class Battler : MonoBehaviour {
         if (attackBasic && canAction)
         {
             Debug.Log("Basic attack Input!");
-            ExecuteAction(AttackParamaters.BasicAttack);
+            ExecuteAction(MaterialSkillBasic.BasicAttack);
 
             actionPoints -= 1;
         }
-        // Using a Mat Skill ------------------------
+        // Using a Mat Skill ---------------------------------------------
         if (matSkill && canAction)
         {
             // Side attack
@@ -516,20 +591,27 @@ public class Battler : MonoBehaviour {
         // While Attacking(Acting) ==============================WHILEACTING=====================================================
         if (currentState == Action.ACTING)
         {
-            //make hits on strike frames
-            foreach (int i in currentActionFrames.strikeFrames)
+            //make hits on strike frames If action is an atttack
+            if (currentActionFrames.strikeFrames.Length > 0)
             {
-                if (execution == i)
+                foreach (int i in currentActionFrames.strikeFrames)
                 {
-                    SetAttHitBox(1.0f);
-                    // Hit other battlers
-                    foreach (Battler other in BattleManager.Manager.allBattlers)
+                    if (execution == i)
                     {
-                        if (other != this && other.alliance != alliance)
+                        SetAttHitBox(1.0f);
+                        // Hit other battlers
+                        foreach (Battler other in BattleManager.Manager.allBattlers)
                         {
-                            if (attachedHitBox.HitTest(other.hurtBox))
+                            if (other != this && other.alliance != alliance)
                             {
-                                other.GetHit(currentAttack.effects.push * facing, currentAttack.effects.lift, currentAttack.effects.damage);
+                                if (attachedHitBox.HitTest(other.hurtBox))
+                                {
+                                    DamageCVars damageV = new DamageCVars();
+                                    damageV.amount = Mathf.Round(currentAttack.effects.damageRatio * attackDamage);
+                                    damageV.attackerAcc = accuracy;
+
+                                    other.GetHit(currentAttack.effects.push * facing, currentAttack.effects.lift, damageV);
+                                }
                             }
                         }
                     }
@@ -593,22 +675,32 @@ public class Battler : MonoBehaviour {
         // Test Stuff
     }
 //---------------------------------------------------------------GETHIT----------------------------------------------------------
-    public void GetHit(float xPush, float yPush, float damage)
+    public float GetHit(float xPush, float yPush, DamageCVars a_damage)
     {
-        if (!defending)
+        float finalDamage = CalcDamage(a_damage);
+        if (finalDamage > 0)
         {
-            healthPoints -= damage;
-            Stagger();
-            velocity = new Vector2(xPush, yPush) / body.weight;
+            hitPoints -= finalDamage;
+            endurance -= finalDamage;
+            if (endurance <= 0)
+            {
+                Stagger();
+            }
+            if (currentState == Action.STAGGERED)
+            {
+                velocity = new Vector2(xPush, yPush) / body.weight;
+            }
         }
-        else
-        {
-            healthPoints -= damage;
-        }
-        
+
+        BattleManager.Manager.TraceDamage(center + new Vector3(0, 0.2f * comboHits, 0), finalDamage);
+        comboHits++;
+        comboDamage += finalDamage;
+        comboTime = 1.5f;
+
+        return finalDamage;
         //hitEffect = 1;
     }
-    void ExecuteAction(AttackParamaters p_attack)
+    void ExecuteAction(MaterialSkillBasic p_attack)
     {
         currentAttack = p_attack;
         currentActionFrames = p_attack.frameData;
@@ -653,5 +745,28 @@ public class Battler : MonoBehaviour {
         execution = 0;
         currentState = Action.STAGGERED;
         thisAnimation.Play("hurt", -1, 0);
+    }
+
+    float CalcDamage(DamageCVars a_damage)
+    {
+        /*float AccEvaMod = 1;
+        float AccEvaScale = (evade + a_damage.attackerAcc); // 0 + 100 = 100
+        AccEvaMod += (evade - a_damage.attackerAcc) / AccEvaScale; // 0 - 100 / 100 = -1
+        /*if (currentState == Action.NEUTRAL)
+        {
+            if (AccEvaMod < 1)
+            {
+                AccEvaMod = 1;
+            }
+        }*/
+        float armorMod = 1 - (armor / (armor + 100));
+
+        float blockMod = 1;
+        if (defending)
+        {
+            blockMod = 1 - effectiveBlock;
+        }
+        Debug.Log("Damage:" + a_damage.amount + " * Block:" + blockMod + " * ArmorReduction:" + armorMod);
+        return Mathf.Round(Mathf.Max(a_damage.amount * blockMod * armorMod, 0));
     }
 }
