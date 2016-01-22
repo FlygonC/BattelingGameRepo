@@ -43,9 +43,13 @@ public class Character
     {
         get { return 0;/*+ armor equip armor*/ }
     }
-    public float speed
+    public float accuracy
     {
-        get { activeStats.speed = Stats.LevelFormula(baseStats.speed, level); return activeStats.speed; }
+        get { activeStats.accuracy = Stats.LevelFormula(baseStats.accuracy, level); return activeStats.accuracy; }
+    }
+    public float evasion
+    {
+        get { activeStats.evasion = Stats.LevelFormula(baseStats.evasion, level); return activeStats.evasion; }
     }
 
     //public float block = 0;// + weapon block power
@@ -59,8 +63,8 @@ public class Stats
     public float mp;
     public float attackDamage;
     public float magicDamage;
-    public float armor;
-    public float speed;
+    public float accuracy;
+    public float evasion;
     /*
     public int vitality = 5;
     public int strength = 5;
@@ -73,8 +77,8 @@ public class Stats
         mp = _num;
         attackDamage = _num;
         magicDamage = _num;
-        armor = _num;
-        speed = _num;
+        accuracy = _num;
+        evasion = _num;
     }
 
     public static float LevelFormulaHp(float _baseHp, float _level)
@@ -140,7 +144,7 @@ public class CharacterSkills
             testAttack1.effects = testEffects1;
             testAttack1.animationName = "thrust";
 
-            skills.materialDown = testAttack1;
+            skills.materialDown = MaterialSkillBasic.SlowAttack;
             skills.materialSide = testAttack1;
             // UP
             MaterialSkillBasic testAttack2 = new MaterialSkillBasic();
