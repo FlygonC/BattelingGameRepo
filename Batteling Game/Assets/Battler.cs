@@ -153,32 +153,32 @@ public class Battler : MonoBehaviour {
     {
         get
         {
-            return 0;
+            return character.armor;
         }
     }
     public float accuracy
     {
         get
         {
-            return character.accuracy;
+            return Mathf.Round(character.accuracy * statsModifier.accuracy);
         }
     }
     public float evade
     {
         get
         {
-            return character.evasion;
+            return Mathf.Round(character.evasion * statsModifier.evasion);
         }
     }
 
 
-    /*public float maxEndurance
+    public float maxEndurance
     {
-        get { return Mathf.Round(character.hpMax / 10); }
+        get { return Mathf.Round(character.hpMax * 0.1f); }
     }
-    public float endurance = 0;*/
+    public float endurance = 0;
 
-    public float effectiveBlock = 0.75f;
+    //public float effectiveBlock = 0.75f;
     private bool stagImmune
     {
         get
@@ -299,7 +299,7 @@ public class Battler : MonoBehaviour {
         // END TEMPORARY
         hitPoints = character.hpMax;
         statsModifier.SetAll(1);
-        //endurance = maxEndurance;
+        endurance = maxEndurance;
     }
     //-----------------------------------------------------------UPDATE----------------------------------------------------------
     void Update()
@@ -318,11 +318,8 @@ public class Battler : MonoBehaviour {
         {
             facing = 1;
         }
-        /*if (hitEffect > 0)
-        {
-            thisRenderer.color = Color.Lerp(Color.white, Color.red * 2, hitEffect);
-            hitEffect -= Time.deltaTime * 8;
-        }*/
+
+        character.UpdateAllStats();
         // Combo Damage
         if (comboTime > 0)
         {
@@ -357,7 +354,7 @@ public class Battler : MonoBehaviour {
             //thisRenderer.color = new Color(1, 1, 1, 0.25f);
         }
         // Endurance
-        /*if (endurance < maxEndurance)
+        if (endurance < maxEndurance && currentState != Action.ACTING)
         {
             endurance += maxEndurance / (60);
             if (endurance >= maxEndurance)
@@ -368,7 +365,7 @@ public class Battler : MonoBehaviour {
         if (endurance < 0)
         {
             endurance = 0;
-        }*/
+        }
         // Action Time
         if (action > 0)
         {
@@ -414,7 +411,7 @@ public class Battler : MonoBehaviour {
             }
         }
         //Action Points
-        if (currentState == Action.NEUTRAL)
+        if (currentState != Action.ACTING)
         {
             if (actionPoints < actionPointsMax)
             {
@@ -422,10 +419,10 @@ public class Battler : MonoBehaviour {
                 {
                     actionPoints += 1.0f / (30.0f);
                 }
-                else
+                /*else
                 {
-                    actionPoints += 0.5f / (60.0f);
-                }
+                    actionPoints += 0.25f / (60.0f);
+                }*/
             }
             if (actionPoints >= actionPointsMax)
             {
@@ -488,28 +485,10 @@ public class Battler : MonoBehaviour {
                         actionPoints -= 1;
                     }
                 }
-                // block diminish
-                if (effectiveBlock > 0)
-                {
-                    effectiveBlock -= 0.75f / (60 * 3);
-                    if (effectiveBlock < 0)
-                    {
-                        effectiveBlock = 0;
-                    }
-                }
             }
             else
             {// Not Defending(Normal Movement) ================================
                 defending = false;
-                // Block restore
-                if (effectiveBlock < 0.75f)
-                {
-                    effectiveBlock += 0.75f / (60 * 3);
-                    if (effectiveBlock > 0.75f)
-                    {
-                        effectiveBlock = 0.75f;
-                    }
-                }
                 // Moving
                 if (movementX != 0)
                 {
@@ -571,6 +550,7 @@ public class Battler : MonoBehaviour {
             // Side attack
             if (movementX != 0)
             {
+                facing = movementX;
                 Debug.Log("Side attack Input!");
                 ExecuteAction(skills.materialSide);
             }
@@ -650,11 +630,11 @@ public class Battler : MonoBehaviour {
 
                     if (xDif < 0)
                     {
-                        position.x -= ((compWidth - Mathf.Abs(xDif)) / 4) * (other.body.weight / body.weight);
+                        position.x -= ((compWidth - Mathf.Abs(xDif)) / 4);
                     }
                     else
                     {
-                        position.x += ((compWidth - Mathf.Abs(xDif)) / 4) * (other.body.weight / body.weight);
+                        position.x += ((compWidth - Mathf.Abs(xDif)) / 4);
                     }
                 }
             }
@@ -689,11 +669,11 @@ public class Battler : MonoBehaviour {
         if (finalDamage > 0)
         {
             hitPoints -= finalDamage;
-            if ((!defending || effectiveBlock < 0.1f) && !stagImmune)
+            endurance -= finalDamage;
+            if (endurance <= 0 || currentState == Action.STAGGERED)
             {
                 Stagger();
             }
-            effectiveBlock = 0.75f;
             if (currentState == Action.STAGGERED)
             {
                 velocity = new Vector2(xPush, yPush) / body.weight;
@@ -761,23 +741,24 @@ public class Battler : MonoBehaviour {
     {
         float AccEvaMod = 1;
         float AccEvaScale = (evade + a_damage.attackerAcc) / 2; // 0 + 100 = 100
-        AccEvaMod = (((evade - a_damage.attackerAcc) / AccEvaScale) / 2) * -1; // 0 - 100 / 100 = -1
-        /*if (currentState == Action.NEUTRAL)
+        AccEvaMod = (((evade - a_damage.attackerAcc) / evade) / 2) * -1; // 0 - 100 / 100 = -1
+        if (defending && AccEvaMod > 0)
         {
-            if (AccEvaMod < 1)
-            {
-                AccEvaMod = 1;
-            }
-        }*/
+            AccEvaMod = 0;
+        }
+        if (currentState == Action.STAGGERED && AccEvaMod < 0)
+        {
+            AccEvaMod = 0;
+        }
 
         float armorMod = 1 - (armor / (armor + 100));
 
         float blockMod = 1;
         if (defending)
         {
-            blockMod = 1 - effectiveBlock;
+            blockMod = 0.25f;
         }
-        //Debug.Log(evade+"-"+a_damage.attackerAcc+"="+(evade - a_damage.attackerAcc)+"/"+AccEvaScale+"= "+AccEvaMod);
+        Debug.Log(evade+"-"+a_damage.attackerAcc+"="+(evade - a_damage.attackerAcc)+"/"+evade+"= "+AccEvaMod);
         Debug.Log("Damage:" + a_damage.amount + " * Block:" + blockMod + " * ArmorReduction:" + armorMod + " = " + (a_damage.amount * blockMod * armorMod) + "   Hit Damage: +" + a_damage.amount + " * " + AccEvaMod + " = " + (a_damage.amount * AccEvaMod));
         //Debug.Log();
         return Mathf.Round(Mathf.Max((a_damage.amount * blockMod * armorMod) + (a_damage.amount * AccEvaMod), 0));

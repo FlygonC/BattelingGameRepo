@@ -39,10 +39,7 @@ public class Character
     {
         get { activeStats.magicDamage = Stats.LevelFormula(baseStats.magicDamage, level); return activeStats.magicDamage; }
     }
-    public float armor
-    {
-        get { return 0;/*+ armor equip armor*/ }
-    }
+    public float armor = 0;
     public float accuracy
     {
         get { activeStats.accuracy = Stats.LevelFormula(baseStats.accuracy, level); return activeStats.accuracy; }
@@ -55,6 +52,16 @@ public class Character
     //public float block = 0;// + weapon block power
 
     public CharacterSkills skills = CharacterSkills.TestSkills;
+
+    public void UpdateAllStats()
+    {
+        activeStats.hp =            Stats.LevelFormulaHp(baseStats.hp, level);
+        activeStats.mp =            Stats.LevelFormulaMp(baseStats.mp, level);
+        activeStats.attackDamage =  Stats.LevelFormula(baseStats.attackDamage, level);
+        activeStats.magicDamage =   Stats.LevelFormula(baseStats.magicDamage, level);
+        activeStats.accuracy =      Stats.LevelFormula(baseStats.accuracy, level);
+        activeStats.evasion =       Stats.LevelFormula(baseStats.evasion, level);
+    }
 }
 [System.Serializable]
 public class Stats
@@ -83,7 +90,7 @@ public class Stats
 
     public static float LevelFormulaHp(float _baseHp, float _level)
     {
-        return Mathf.Round(((_baseHp * _level * 2) / 10) * (_level / 20) + (5 * _level));
+        return Mathf.Round(((_baseHp * _level * 2) / 10) * (_level / 10) + (4 * _level));
     }
     public static float LevelFormulaMp(float _baseMp, float _level)
     {

@@ -6,6 +6,10 @@ public class BattleManager : MonoBehaviour {
     public static BattleManager Manager;
 
     public GameObject DamageTracePrefab;
+    
+    //private Battler[] Players;
+
+    //private Battler[] Enemies;
 
     private Battler[] AllBattlers;
     public Battler[] allBattlers
@@ -15,6 +19,7 @@ public class BattleManager : MonoBehaviour {
             return AllBattlers;
         }
     }
+
     private BattleField Field = new BattleField();
     public BattleField field
     {
