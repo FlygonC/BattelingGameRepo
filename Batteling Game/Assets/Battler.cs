@@ -179,13 +179,6 @@ public class Battler : MonoBehaviour {
     public float endurance = 0;
 
     //public float effectiveBlock = 0.75f;
-    private bool stagImmune
-    {
-        get
-        {
-            return this.execution < currentActionFrames.execution && currentActionFrames.superArmor && currentState == Action.ACTING;
-        }
-    }
 
     // Movement variables
     public BattlerPosition position;
@@ -211,7 +204,7 @@ public class Battler : MonoBehaviour {
     public int movementX;
     [Range(-1, 1)]
     public int movementY;
-    private int laneChange;
+    private float laneChange;
     //public bool jump = false;
     public bool attackBasic = false;
     public bool matSkill = false;
@@ -220,16 +213,20 @@ public class Battler : MonoBehaviour {
     private Action currentState = Action.NEUTRAL;
     private float action;
     private float execution;
+    private int currentFrame;
+    private bool currentFrameExecuted;
     private bool canAttack = true;
     private bool defending = false;
-    private ActionFrameData currentActionFrames = new ActionFrameData();
-    private MaterialSkillBasic currentAttack;
+    //private ActionFrameData currentActionFrames = new ActionFrameData();
+    private BattlerAction currentAction;
     private BattlerCollider attachedHitBox = new BattlerCollider();
     public float actionPoints = 3;
     public float actionPointsMax
     {
         get { return 3; }
     }
+    [Range(1,0.1f)]
+    public float actionSpeed = 1;
     private bool canAction
     {
         get
@@ -343,6 +340,17 @@ public class Battler : MonoBehaviour {
             comboHits = 0;
             comboDamage = 0;
         }
+        // Animation speed
+        thisAnimation.speed = actionSpeed;
+
+        if (actionPoints < 1)
+        {
+            thisRenderer.color = new Color(0.7f, 0.6f, 0.6f, 1);
+        }
+        else
+        {
+            thisRenderer.color = Color.white;
+        }
     }
     //===========================================================FIXEDUPDATE=====================================================
 	void FixedUpdate () {
@@ -356,7 +364,7 @@ public class Battler : MonoBehaviour {
         // Endurance
         if (endurance < maxEndurance && currentState != Action.ACTING)
         {
-            endurance += maxEndurance / (60);
+            endurance += maxEndurance / (60 * 2);
             if (endurance >= maxEndurance)
             {
                 endurance = maxEndurance;
@@ -366,21 +374,7 @@ public class Battler : MonoBehaviour {
         {
             endurance = 0;
         }
-        // Action Time
-        if (action > 0)
-        {
-            if (currentState != Action.STAGGERED)
-            {
-                action--;
-            }
-            else
-            {// If Staggered and Airborne, can't recover from Staggered
-                if (!airborne)
-                {
-                    action--;
-                }
-            }
-        }
+        // Base Animations
         if (action <= 0)  
         {// If action timer is 0, state is Neutral and canAct
             action = 0;
@@ -415,9 +409,9 @@ public class Battler : MonoBehaviour {
         {
             if (actionPoints < actionPointsMax)
             {
-                if (!defending && movementX == 0 && movementY == 0)
+                if (!defending /*&& movementX == 0 && movementY == 0*/)
                 {
-                    actionPoints += 1.0f / (30.0f);
+                    actionPoints += 1.0f / (15.0f);
                 }
                 /*else
                 {
@@ -459,21 +453,21 @@ public class Battler : MonoBehaviour {
                     if (movementX != 0 && movementX != facing)
                     {
                         velocity = new Vector2(-0.12f * facing, 0.1f);
-                        ExecuteAction(MaterialSkillBasic.Roll);
+                        ExecuteAction(BattlerAction.Roll);
                         actionPoints -= 1;
                     }
                     // Forwardstep
                     if (movementX != 0 && movementX == facing)
                     {
                         velocity = new Vector2(0.2f * facing, 0.0f);
-                        ExecuteAction(MaterialSkillBasic.Roll);
+                        ExecuteAction(BattlerAction.Roll);
                         actionPoints -= 1;
                     }
                     // Sidestep
                     if (movementY != 0)
                     {
                         velocity = new Vector2(0, 0.15f);
-                        ExecuteAction(MaterialSkillBasic.Roll);
+                        ExecuteAction(BattlerAction.Roll);
                         if (movementY >= 1 && position.lane < BattleManager.Manager.field.lanes - 1)
                         {
                             position.lane += 1;
@@ -495,11 +489,11 @@ public class Battler : MonoBehaviour {
                     facing = movementX;
                     if (movementX >= 1)
                     {
-                        position.x += moveSpeed;
+                        position.x += moveSpeed * actionSpeed;
                     }
                     else if (movementX <= -1)
                     {
-                        position.x -= moveSpeed;
+                        position.x -= moveSpeed * actionSpeed;
                     }
                 }
                 // Lane Change
@@ -507,11 +501,11 @@ public class Battler : MonoBehaviour {
                 {
                     if (movementY >= 1 && position.lane < BattleManager.Manager.field.lanes - 1)
                     {
-                        laneChange++;
+                        laneChange += actionSpeed;
                     }
                     else if (movementY <= -1 && position.lane > 0)
                     {
-                        laneChange--;
+                        laneChange -= actionSpeed;
                     }
                 }
                 else
@@ -540,7 +534,7 @@ public class Battler : MonoBehaviour {
         if (attackBasic && canAction)
         {
             Debug.Log("Basic attack Input!");
-            ExecuteAction(MaterialSkillBasic.BasicAttack);
+            ExecuteAction(BattlerAction.BasicAttack);
 
             actionPoints -= 1;
         }
@@ -577,36 +571,63 @@ public class Battler : MonoBehaviour {
             actionPoints -= 1;
         }
         // While Attacking(Acting) ==============================WHILEACTING=====================================================
+        // Action Time -----------------------------------------------------------------------
+        if (action > 0)
+        {
+            if (currentState != Action.STAGGERED)
+            {
+                action -= actionSpeed;
+            }
+            else
+            {// If Staggered and Airborne, can't recover from Staggered
+                if (!airborne)
+                {
+                    action -= actionSpeed;
+                }
+            }
+        }
+        // Action Execution
         if (currentState == Action.ACTING)
         {
-            //make hits on strike frames If action is an atttack
-            if (currentActionFrames.strikeFrames.Length > 0)
+            if (execution >= currentFrame + 1)
             {
-                foreach (int i in currentActionFrames.strikeFrames)
-                {
-                    if (execution == i)
-                    {
-                        SetAttHitBox(1.0f);
-                        // Hit other battlers
-                        foreach (Battler other in BattleManager.Manager.allBattlers)
-                        {
-                            if (other != this && other.alliance != alliance)
-                            {
-                                if (attachedHitBox.HitTest(other.hurtBox))
-                                {
-                                    DamageCVars damageV = new DamageCVars();
-                                    damageV.amount = Mathf.Round(currentAttack.effects.damageRatio * attackDamage);
-                                    damageV.attackerAcc = accuracy;
+                currentFrame++;
+                currentFrameExecuted = false;
+            }
+            //make hits on strike frames If action is an atttack
 
-                                    other.GetHit(currentAttack.effects.push * facing, currentAttack.effects.lift, damageV);
-                                }
+            foreach (BAStrike i in currentAction.strikeFrames)
+            {
+                if (currentFrame == i.frame && !currentFrameExecuted)
+                {
+                    SetAttHitBox(1.0f);
+                    // Hit other battlers
+                    foreach (Battler other in BattleManager.Manager.allBattlers)
+                    {
+                        if (other != this && other.alliance != alliance)
+                        {
+                            if (attachedHitBox.HitTest(other.hurtBox))
+                            {
+                                DamageCVars damageV = new DamageCVars();
+                                damageV.amount = Mathf.Round(i.power * attackDamage);
+                                damageV.attackerAcc = accuracy;
+
+                                other.GetHit(i.push * facing, i.lift, damageV);
                             }
                         }
                     }
                 }
             }
+            foreach (BAmovement i in currentAction.movementFrames)
+            {
+                if (currentFrame == i.frame && !currentFrameExecuted)
+                {
+                    velocity = new Vector2(i.forward * facing, i.jump);
+                }
+            }
+
             // canAttack in combo frames
-            if (execution > currentActionFrames.execution && execution <= currentActionFrames.comboLimit)
+            if (execution > currentAction.executionFrames && execution <= currentAction.comboLimit)
             {
                 canAttack = true;
             }
@@ -614,7 +635,8 @@ public class Battler : MonoBehaviour {
             {
                 canAttack = false;
             }
-            execution++;
+            currentFrameExecuted = true;
+            execution += actionSpeed;
         }
         // UnControlled2 ----------------------------------------UNCONTROLLED2---------------------------------------------------
         // Push other Battlers
@@ -674,10 +696,19 @@ public class Battler : MonoBehaviour {
             {
                 Stagger();
             }
-            if (currentState == Action.STAGGERED)
+            if (!defend)
             {
                 velocity = new Vector2(xPush, yPush) / body.weight;
-                Stagger();
+            } else
+            {
+                velocity = (new Vector2(xPush, yPush) / body.weight) / 2;
+            }
+        }
+        if (defending)
+        {
+            if (actionPoints > 1)
+            {
+                actionPoints--;
             }
         }
 
@@ -689,22 +720,25 @@ public class Battler : MonoBehaviour {
         return finalDamage;
         //hitEffect = 1;
     }
-    void ExecuteAction(MaterialSkillBasic p_attack)
+
+    void ExecuteAction(BattlerAction p_attack)
     {
-        currentAttack = p_attack;
-        currentActionFrames = p_attack.frameData;
-        action = p_attack.frameData.fullFrames;
+        currentAction = p_attack;
+        //currentActionFrames = p_attack.frameData;
+        action = p_attack.fullFrames;
+        currentFrame = 0;
 
         if (thisAnimation)
         {
-            if (currentAttack.animationName != null)
+            if (currentAction.animationName != null)
             {
-                thisAnimation.Play(currentAttack.animationName, -1, 0);
+                thisAnimation.Play(currentAction.animationName, -1, 0);
             }
             else
             {
                 thisAnimation.Play("attackBasic", -1, 0);
             }
+            //thisAnimation.speed = actionSpeed;
         }
         currentState = Action.ACTING;
         execution = 0;
@@ -730,8 +764,9 @@ public class Battler : MonoBehaviour {
 
     void Stagger()
     {
-        action = Mathf.Max(2, 20 - comboHits);
+        action = Mathf.Max(2, 30);
         execution = 0;
+        actionPoints = actionPointsMax;
         currentState = Action.STAGGERED;
         defending = false;
         thisAnimation.Play("hurt", -1, 0);
@@ -741,7 +776,7 @@ public class Battler : MonoBehaviour {
     {
         float AccEvaMod = 1;
         float AccEvaScale = (evade + a_damage.attackerAcc) / 2; // 0 + 100 = 100
-        AccEvaMod = (((evade - a_damage.attackerAcc) / evade) / 2) * -1; // 0 - 100 / 100 = -1
+        AccEvaMod = (((evade - a_damage.attackerAcc) / AccEvaScale) / 2) * -1; // 0 - 100 / 100 = -1
         if (defending && AccEvaMod > 0)
         {
             AccEvaMod = 0;

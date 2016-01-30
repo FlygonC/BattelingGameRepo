@@ -8,7 +8,7 @@ public class PainBox : MonoBehaviour {
     public BattlerCollider hitBox;
 
     public Battler.Alliance alliance = Battler.Alliance.PLAYER;
-    public AttackEffects effects = new AttackEffects();
+    //public AttackEffects effects = new AttackEffects();
 
     public float linger;
     public int maxHits;
@@ -69,7 +69,7 @@ public class PainBox : MonoBehaviour {
         hitBox.z = 0;
     }*/
     
-    public void PhysicalAttackHitBox(BattlerPosition battler_position, BattlerBody battler_body, AttackEffects attack_effects, int battler_facing, float attack_range)
+    /*public void PhysicalAttackHitBox(BattlerPosition battler_position, BattlerBody battler_body, AttackEffects attack_effects, int battler_facing, float attack_range)
     {
         //thisTrans.position = new Vector3(battler_position.x, battler_position.y, 0);
         effects = attack_effects;
@@ -92,5 +92,5 @@ public class PainBox : MonoBehaviour {
         hitBox.y1 = battler_position.y;
         hitBox.y2 = battler_position.y + battler_body.height;
         hitBox.z = battler_position.lane;
-    }
+    }*/
 }

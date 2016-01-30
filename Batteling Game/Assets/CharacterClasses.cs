@@ -90,7 +90,7 @@ public class Stats
 
     public static float LevelFormulaHp(float _baseHp, float _level)
     {
-        return Mathf.Round(((_baseHp * _level * 2) / 10) * (_level / 10) + (4 * _level));
+        return Mathf.Round(((_baseHp * _level * 2) / 10) * (_level / 10) + (10 * _level));
     }
     public static float LevelFormulaMp(float _baseMp, float _level)
     {
@@ -125,10 +125,10 @@ public class CharacterExperience
 }
 public class CharacterSkills
 {
-    public MaterialSkillBasic materialNeutral = MaterialSkillBasic.BasicAttack;
-    public MaterialSkillBasic materialUp = MaterialSkillBasic.BasicAttack;
-    public MaterialSkillBasic materialSide = MaterialSkillBasic.BasicAttack;
-    public MaterialSkillBasic materialDown = MaterialSkillBasic.BasicAttack;
+    public BattlerAction materialNeutral = BattlerAction.BasicAttack;
+    public BattlerAction materialUp = BattlerAction.BasicAttack;
+    public BattlerAction materialSide = BattlerAction.BasicAttack;
+    public BattlerAction materialDown = BattlerAction.BasicAttack;
 
     public static CharacterSkills TestSkills
     {
@@ -136,40 +136,29 @@ public class CharacterSkills
         {
             CharacterSkills skills = new CharacterSkills();
 
-            MaterialSkillBasic testAttack1 = new MaterialSkillBasic();
-            AttackEffects testEffects1 = new AttackEffects();
-            testEffects1.push = 0.1f;
-            testEffects1.lift = 0;
-            testEffects1.damageRatio = 0.2f;
-            ActionFrameData testFrameData1 = new ActionFrameData();
-            testFrameData1.execution = 25;
-            testFrameData1.combo = 5;
-            testFrameData1.lag = 5;
-            testFrameData1.strikeFrames = new int[2] { 15, 25 };
+            skills.materialNeutral = BattlerAction.BasicAttack;
+            skills.materialUp = BattlerAction.BasicAttack;
+            
+            skills.materialDown = BattlerAction.BasicAttack;
 
-            testAttack1.frameData = testFrameData1;
-            testAttack1.effects = testEffects1;
-            testAttack1.animationName = "thrust";
+            BattlerAction ret = new BattlerAction();
+            ret.executionFrames = 22;
+            ret.reposteFrames = 15;
 
-            skills.materialDown = MaterialSkillBasic.SlowAttack;
-            skills.materialSide = testAttack1;
-            // UP
-            MaterialSkillBasic testAttack2 = new MaterialSkillBasic();
-            AttackEffects testEffects2 = new AttackEffects();
-            testEffects2.push = 0;
-            testEffects2.lift = 0.3f;
-            testEffects2.damageRatio = 0.3f;
-            ActionFrameData testFrameData2 = new ActionFrameData();
-            testFrameData2.execution = 10;
-            testFrameData2.combo = 45;
-            testFrameData2.lag = 1;
-            testFrameData2.strikeFrames = new int[1] { 5 };
+            BAStrike strk1 = new BAStrike();
+            strk1.frame = 15;
+            strk1.power = 0.7f;
+            strk1.push = 0.05f;
+            ret.strikeFrames = new BAStrike[1] { strk1 };
 
-            testAttack2.frameData = testFrameData2;
-            testAttack2.effects = testEffects2;
-            //testAttack2.animationName = "attackBasic";
+            BAmovement move1 = new BAmovement();
+            move1.frame = 15;
+            move1.forward = 0.1f;
+            ret.movementFrames = new BAmovement[1] { move1 };
 
-            skills.materialUp = testAttack2;
+            ret.animationName = "thrust";
+
+            skills.materialSide = ret;
 
             return skills;
         }
