@@ -178,8 +178,6 @@ public class Battler : MonoBehaviour {
     }
     public float endurance = 0;
 
-    //public float effectiveBlock = 0.75f;
-
     // Movement variables
     public BattlerPosition position;
     private float softZ;
@@ -232,6 +230,22 @@ public class Battler : MonoBehaviour {
         get
         {
             return canAttack && actionPoints >= 1.0f;
+        }
+    }
+    private int parryFrames = 0;
+    private int parryDelay = 60;
+    private int parryWindow = 10;
+    private bool parry
+    {
+        get
+        {
+            if (parryFrames > parryDelay - parryWindow)
+            {
+                return true;
+            } else
+            {
+                return false;
+            }
         }
     }
     // Collision Variables
@@ -343,13 +357,14 @@ public class Battler : MonoBehaviour {
         // Animation speed
         thisAnimation.speed = actionSpeed;
 
+        thisRenderer.color = Color.white;
         if (actionPoints < 1)
         {
             thisRenderer.color = new Color(0.7f, 0.6f, 0.6f, 1);
         }
-        else
+        if (parry)
         {
-            thisRenderer.color = Color.white;
+            thisRenderer.color = Color.blue;
         }
     }
     //===========================================================FIXEDUPDATE=====================================================
@@ -411,7 +426,7 @@ public class Battler : MonoBehaviour {
             {
                 if (!defending /*&& movementX == 0 && movementY == 0*/)
                 {
-                    actionPoints += 1.0f / (15.0f);
+                    actionPoints += 1.0f / (30.0f);
                 }
                 /*else
                 {
@@ -424,6 +439,15 @@ public class Battler : MonoBehaviour {
             }
             // TEMPORARY
             //hitPoints += 10;
+        }
+        // Parry
+        if (parryFrames > 0)
+        {
+            parryFrames--;
+            if (parryFrames < 0)
+            {
+                parryFrames = 0;
+            }
         }
         // Ground Friction
         if (airborne == false)
@@ -456,12 +480,16 @@ public class Battler : MonoBehaviour {
                         ExecuteAction(BattlerAction.Roll);
                         actionPoints -= 1;
                     }
-                    // Forwardstep
+                    // Parrying
                     if (movementX != 0 && movementX == facing)
                     {
-                        velocity = new Vector2(0.2f * facing, 0.0f);
-                        ExecuteAction(BattlerAction.Roll);
-                        actionPoints -= 1;
+                        //velocity = new Vector2(0.2f * facing, 0.0f);
+                        //ExecuteAction(BattlerAction.Roll);
+                        //actionPoints -= 1;
+                        if (parryFrames == 0)
+                        {
+                            parryFrames = parryDelay;
+                        }
                     }
                     // Sidestep
                     if (movementY != 0)
@@ -600,7 +628,7 @@ public class Battler : MonoBehaviour {
             {
                 if (currentFrame == i.frame && !currentFrameExecuted)
                 {
-                    SetAttHitBox(1.0f);
+                    SetAttHitBox(1.3f);
                     // Hit other battlers
                     foreach (Battler other in BattleManager.Manager.allBattlers)
                     {
@@ -608,17 +636,25 @@ public class Battler : MonoBehaviour {
                         {
                             if (attachedHitBox.HitTest(other.hurtBox))
                             {
-                                DamageCVars damageV = new DamageCVars();
-                                damageV.amount = Mathf.Round(i.power * attackDamage);
-                                damageV.attackerAcc = accuracy;
+                                if (!other.parry)
+                                {
+                                    DamageCVars damageV = new DamageCVars();
+                                    damageV.amount = Mathf.Round(i.power * attackDamage);
+                                    damageV.attackerAcc = accuracy;
 
-                                other.GetHit(i.push * facing, i.lift, damageV);
+                                    other.GetHit(i.push * facing, i.lift, damageV);
+                                }
+                                else
+                                {
+                                    Stagger();
+                                    velocity = new Vector2(-0.1f * facing, 0);
+                                }
                             }
                         }
                     }
                 }
             }
-            foreach (BAmovement i in currentAction.movementFrames)
+            foreach (BAMovement i in currentAction.movementFrames)
             {
                 if (currentFrame == i.frame && !currentFrameExecuted)
                 {
@@ -629,7 +665,7 @@ public class Battler : MonoBehaviour {
             // canAttack in combo frames
             if (execution > currentAction.executionFrames && execution <= currentAction.comboLimit)
             {
-                canAttack = true;
+                //canAttack = true;
             }
             else
             {
@@ -770,13 +806,26 @@ public class Battler : MonoBehaviour {
         currentState = Action.STAGGERED;
         defending = false;
         thisAnimation.Play("hurt", -1, 0);
+
+        parryFrames = 0;
     }
 
     float CalcDamage(DamageCVars a_damage)
     {
         float AccEvaMod = 1;
-        float AccEvaScale = (evade + a_damage.attackerAcc) / 2; // 0 + 100 = 100
-        AccEvaMod = (((evade - a_damage.attackerAcc) / AccEvaScale) / 2) * -1; // 0 - 100 / 100 = -1
+        float AccEvaScale = (evade + a_damage.attackerAcc) / 2;
+        float evadeFinal = 0;
+        if (defending)
+        {
+            evadeFinal = evade * 2;
+        }
+        else
+        {
+            evadeFinal = evade;
+        }
+
+        AccEvaMod = (((evadeFinal - a_damage.attackerAcc) / AccEvaScale) / 2) * -1;
+
         if (defending && AccEvaMod > 0)
         {
             AccEvaMod = 0;
@@ -788,14 +837,11 @@ public class Battler : MonoBehaviour {
 
         float armorMod = 1 - (armor / (armor + 100));
 
-        float blockMod = 1;
-        if (defending)
-        {
-            blockMod = 0.25f;
-        }
-        Debug.Log(evade+"-"+a_damage.attackerAcc+"="+(evade - a_damage.attackerAcc)+"/"+evade+"= "+AccEvaMod);
-        Debug.Log("Damage:" + a_damage.amount + " * Block:" + blockMod + " * ArmorReduction:" + armorMod + " = " + (a_damage.amount * blockMod * armorMod) + "   Hit Damage: +" + a_damage.amount + " * " + AccEvaMod + " = " + (a_damage.amount * AccEvaMod));
+        //float blockMod = 1;
+        
+        Debug.Log(evadeFinal + "-"+a_damage.attackerAcc+"="+(evadeFinal - a_damage.attackerAcc)+"/"+ AccEvaScale + "= "+AccEvaMod);
+        Debug.Log("Damage:" + a_damage.amount + "ArmorReduction:" + armorMod + " = " + (a_damage.amount * armorMod) + "   Hit Damage: +" + a_damage.amount + " * " + AccEvaMod + " = " + (a_damage.amount * AccEvaMod));
         //Debug.Log();
-        return Mathf.Round(Mathf.Max((a_damage.amount * blockMod * armorMod) + (a_damage.amount * AccEvaMod), 0));
+        return Mathf.Round(Mathf.Max((a_damage.amount * armorMod) + (a_damage.amount * AccEvaMod), 0));
     }
 }

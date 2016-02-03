@@ -148,13 +148,13 @@ public class CharacterSkills
             BAStrike strk1 = new BAStrike();
             strk1.frame = 15;
             strk1.power = 0.7f;
-            strk1.push = 0.05f;
+            strk1.push = 0.1f;
             ret.strikeFrames = new BAStrike[1] { strk1 };
 
-            BAmovement move1 = new BAmovement();
+            BAMovement move1 = new BAMovement();
             move1.frame = 15;
             move1.forward = 0.1f;
-            ret.movementFrames = new BAmovement[1] { move1 };
+            ret.movementFrames = new BAMovement[1] { move1 };
 
             ret.animationName = "thrust";
 

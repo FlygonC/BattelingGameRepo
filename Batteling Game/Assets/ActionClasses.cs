@@ -10,7 +10,7 @@ public class BAStrike
     public float push = 0;
     public float lift = 0;
 }
-public class BAmovement
+public class BAMovement
 {
     public int frame;
 
@@ -23,7 +23,7 @@ public class BattlerAction
     public int executionFrames;
     public int reposteFrames;
     public BAStrike[] strikeFrames;
-    public BAmovement[] movementFrames;
+    public BAMovement[] movementFrames;
 
     public int fullFrames
     {
@@ -55,7 +55,7 @@ public class BattlerAction
             strk1.power = 0.5f;
             ret.strikeFrames = new BAStrike[1] { strk1 };
 
-            ret.movementFrames = new BAmovement[0];
+            ret.movementFrames = new BAMovement[0];
             ret.animationName = "basicAttack";
 
             return ret;
@@ -69,7 +69,7 @@ public class BattlerAction
             ret.executionFrames = 20;
             ret.reposteFrames = 0;
             ret.strikeFrames = new BAStrike[0];
-            ret.movementFrames = new BAmovement[0];
+            ret.movementFrames = new BAMovement[0];
             ret.animationName = "jump";
 
             return ret;
