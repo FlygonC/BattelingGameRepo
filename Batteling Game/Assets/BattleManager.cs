@@ -10,7 +10,7 @@ public class BattleManager : MonoBehaviour {
     //private Battler[] Players;
 
     //private Battler[] Enemies;
-
+    [SerializeField]
     private Battler[] AllBattlers;
     public Battler[] allBattlers
     {

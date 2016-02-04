@@ -10,7 +10,7 @@ public class BattleCamera : MonoBehaviour {
     {
         get
         {
-            return new Vector3(X, Y - (Z / 10), Z);
+            return new Vector3(X, Y, Z);
         }
     }
     private Vector3 currentFinalDif
@@ -31,6 +31,11 @@ public class BattleCamera : MonoBehaviour {
         }
     }
 
+    [SerializeField]
+    private float tallest = 0;
+    //[SerializeField]
+    //private float shortest = 0;
+
     private float aspect
     {
         get
@@ -42,7 +47,7 @@ public class BattleCamera : MonoBehaviour {
     public float zoomMinimum = -3.5f;
     [Range(0,1)]
     public float persistence = 0.15f;
-    [Range(0, 1)]
+    [Range(0.001f, 1)]
     public float closness = 0.8f;
 
     void Start () {
@@ -56,23 +61,34 @@ public class BattleCamera : MonoBehaviour {
         Z = 0;
         furthestLeft = Mathf.Infinity;
         furthestRight = -Mathf.Infinity;
+        tallest = -Mathf.Infinity;
+        //shortest = 0;
         foreach (Battler i in BattleManager.Manager.allBattlers)
         {
-            X += i.position.x;
-            Y += i.body.height / 2;
-            //Z += i.position.z;
-            if (i.position.x < furthestLeft)
+            if (i.alive)
             {
-                furthestLeft = i.position.x;
-            }
-            if (i.position.x > furthestRight)
-            {
-                furthestRight = i.position.x;
+                //X += i.position.x;
+                Y += i.body.height / 2;
+                //Z += i.position.z;
+                if (i.position.x < furthestLeft)
+                {
+                    furthestLeft = i.position.x;
+                }
+                if (i.position.x > furthestRight)
+                {
+                    furthestRight = i.position.x;
+                }
+                
+                if (i.body.height > tallest)
+                {
+                    tallest = i.body.height;
+                }
             }
         }
         X = furthestLeft + (furthestDif / 2);
-        Y = (Y / BattleManager.Manager.allBattlers.Length);
-        Z = -(Mathf.Max(zoomMinimum, furthestDif)) / (aspect * closness);
+        //Y = Y / BattleManager.Manager.allBattlers.Length;
+        Y = Mathf.Max(1, tallest / 2);
+        Z = (-(Mathf.Max(zoomMinimum, furthestDif)) / (aspect * closness)) - Y;
 
         // Set Position
         this.transform.position += currentFinalDif * persistence;
