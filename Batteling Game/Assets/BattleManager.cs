@@ -6,10 +6,11 @@ public class BattleManager : MonoBehaviour {
     public static BattleManager Manager;
 
     public GameObject DamageTracePrefab;
-    
-    //private Battler[] Players;
 
-    //private Battler[] Enemies;
+    /*[SerializeField]
+    private int players = 1;
+    [SerializeField]
+    private int monsters = 1;*/
     [SerializeField]
     private Battler[] AllBattlers;
     public Battler[] allBattlers
@@ -51,6 +52,12 @@ public class BattleManager : MonoBehaviour {
 	void Update () {
 	    
 	}
+
+    private void AddPlayers()
+    {
+
+    }
+    //public
 
     public void TraceDamage(Vector3 a_position, float a_display)
     {

@@ -30,8 +30,7 @@ public class BattleCamera : MonoBehaviour {
             return furthestRight - furthestLeft;
         }
     }
-
-    [SerializeField]
+    
     private float tallest = 0;
     //[SerializeField]
     //private float shortest = 0;
@@ -49,6 +48,10 @@ public class BattleCamera : MonoBehaviour {
     public float persistence = 0.15f;
     [Range(0.001f, 1)]
     public float closness = 0.8f;
+    [Range(0, 5)]
+    public float YMin = 2;
+    [Range(1, 2)]
+    public float YZoomFactor = 1.5f;
 
     void Start () {
 	    
@@ -87,8 +90,8 @@ public class BattleCamera : MonoBehaviour {
         }
         X = furthestLeft + (furthestDif / 2);
         //Y = Y / BattleManager.Manager.allBattlers.Length;
-        Y = Mathf.Max(1, tallest / 2);
-        Z = (-(Mathf.Max(zoomMinimum, furthestDif)) / (aspect * closness)) - Y;
+        Y = Mathf.Max(YMin, tallest);
+        Z = (-(Mathf.Max(zoomMinimum, furthestDif)) / (aspect * closness)) - (Y / YZoomFactor);
 
         // Set Position
         this.transform.position += currentFinalDif * persistence;

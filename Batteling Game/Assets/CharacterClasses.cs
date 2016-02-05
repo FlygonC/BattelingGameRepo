@@ -6,16 +6,6 @@ public class Character
 {
     //public CharacterExperience experience = new CharacterExperience();
     public int level = 1;
-    /*    {
-            get
-            {
-                return experience.level;
-            }
-            set
-            {
-                experience.level = value;
-            }
-        }*/
     public Stats baseStats = new Stats();
     public Stats activeStats = new Stats();
     // Weapon Equip
@@ -52,6 +42,7 @@ public class Character
     //public float block = 0;// + weapon block power
 
     public CharacterSkills skills = CharacterSkills.TestSkills;
+    
 
     public void UpdateAllStats()
     {

@@ -101,7 +101,7 @@ public struct DamageCVars
 
 
 //-------------------------------------------------------------------------------------------------------------------------------
-[DisallowMultipleComponent]
+[DisallowMultipleComponent][RequireComponent(typeof(SpriteRenderer), typeof(Animator))]
 public class Battler : MonoBehaviour {
     //-----------------------------------------------------------BATTLER---------------------------------------------------------
     public enum Action { NEUTRAL = 0, ACTING, STAGGERED, DOWN }
@@ -537,11 +537,12 @@ public class Battler : MonoBehaviour {
                     SetAttHitBox(1.3f);
                     // Hit other battlers
                     foreach (Battler other in BattleManager.Manager.allBattlers)
-                    {
+                    {// Other battlers
                         if (other != this && other.alliance != alliance && other.alive)
-                        {
+                        {// Not itself, not same team and is alive
                             if (attachedHitBox.HitTest(other.hurtBox))
                             {
+                                // If a target is hit!
                                 if (!other.parry)
                                 {
                                     DamageCVars damageV = new DamageCVars();
