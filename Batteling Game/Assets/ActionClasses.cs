@@ -20,10 +20,10 @@ public class BAMovement
 [System.Serializable]
 public class BattlerAction
 {
-    public int executionFrames;
-    public int reposteFrames;
-    public BAStrike[] strikeFrames;
-    public BAMovement[] movementFrames;
+    public int executionFrames = 0;
+    public int reposteFrames = 0;
+    public BAStrike[] strikeFrames = new BAStrike[0];
+    public BAMovement[] movementFrames = new BAMovement[0];
 
     public int fullFrames
     {

@@ -16,7 +16,7 @@ public class DamageText : MonoBehaviour {
         text.text = display;
         panSpeed = 8;
         lifeTime = 1.5f;
-        transform.position -= new Vector3(0.16f, 0, 0);
+        //transform.position -= new Vector3(0.16f, 0, 0);
     }
 	
 	// Update is called once per frame
@@ -28,9 +28,9 @@ public class DamageText : MonoBehaviour {
         }
         if (panSpeed > 0)
         {
-            panSpeed--;
+            panSpeed *= 0.8f;
         }
-        this.transform.position += new Vector3(panSpeed * 0.01f, 0, 0);
+        this.transform.position += new Vector3(0, panSpeed * 0.01f, 0);
         lifeTime -= Time.deltaTime;
     }
 }

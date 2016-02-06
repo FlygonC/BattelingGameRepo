@@ -71,6 +71,14 @@ public class BattlerPosition
             return new Vector3(x, y, (float)lane);
         }
     }
+
+    public BattlerPosition() { }
+    public BattlerPosition(float _x, float _y, int _z)
+    {
+        x = _x;
+        y = _y;
+        lane = _z;
+    }
 }
 [System.Serializable]
 public class BattlerBody
@@ -227,9 +235,9 @@ public class Battler : MonoBehaviour {
     private int currentFrame;
     private bool currentFrameExecuted;
     private bool canAttack = true;
-    private bool defending = false;
+    //private bool defending = false;
     //private ActionFrameData currentActionFrames = new ActionFrameData();
-    private BattlerAction currentAction;
+    private BattlerAction currentAction = new BattlerAction();
     private BattlerCollider attachedHitBox = new BattlerCollider();
     public float actionPoints = 3;
     public float actionPointsMax
@@ -245,14 +253,14 @@ public class Battler : MonoBehaviour {
             return canAttack && actionPoints >= 1.0f;
         }
     }
-    private int parryFrames = 0;
-    private int parryDelay = 60;
-    private int parryWindow = 10;
-    private bool parry
+    private int blockFrames = 0;
+    private int blockDelay = 60;
+    private int blockWindow = 15;
+    private bool block
     {
         get
         {
-            if (parryFrames > parryDelay - parryWindow)
+            if (blockFrames > blockDelay - blockWindow)
             {
                 return true;
             } else
@@ -324,6 +332,9 @@ public class Battler : MonoBehaviour {
         hitPoints = character.hpMax;
         statsModifier.SetAll(1);
         endurance = maxEndurance;
+
+        // ADD SELF TO BATTLER LIST IN BATTLEMANAGER
+        Join();
     }
     //-----------------------------------------------------------UPDATE----------------------------------------------------------
     void Update()
@@ -361,7 +372,7 @@ public class Battler : MonoBehaviour {
         {
             thisRenderer.color = new Color(0.7f, 0.6f, 0.6f, 1);
         }
-        if (parry)
+        if (block)
         {
             thisRenderer.color = Color.blue;
         }
@@ -373,10 +384,10 @@ public class Battler : MonoBehaviour {
         // VARIABLESUPDATE
         VariablesUpdate();
         // Neutral Animation
-        if (currentState == Action.NEUTRAL)
+        /*if (currentState == Action.NEUTRAL)
         {
             NeutralAnimation();
-        }
+        }*/
         if (currentState == Action.DOWN)
         {
             thisAnimation.Play("dead");
@@ -384,99 +395,63 @@ public class Battler : MonoBehaviour {
 
 
         // Controlled: ------------------------------------------CONTROLLED------------------------------------------------------
-        if (currentState == Action.NEUTRAL && !airborne)
+        if (currentState == Action.NEUTRAL && !airborne && actionPoints >= 1)
         {
-            // Input
-            // Defending ======================================================
-            if (defend)
+            NeutralAnimation();
+            // Neutral actions
+            // Moving
+            if (movementX != 0)
             {
-                defending = true;
-                if (canAction)
+                facing = movementX;
+                if (movementX >= 1)
                 {
-                    // Backstep
-                    if (movementX != 0 && movementX != facing)
-                    {
-                        velocity = new Vector2(-0.12f * facing, 0.1f);
-                        ExecuteAction(BattlerAction.Roll);
-                        actionPoints -= 1;
-                    }
-                    // Parrying
-                    if (movementX != 0 && movementX == facing)
-                    {
-                        //velocity = new Vector2(0.2f * facing, 0.0f);
-                        //ExecuteAction(BattlerAction.Roll);
-                        //actionPoints -= 1;
-                        if (parryFrames == 0)
-                        {
-                            parryFrames = parryDelay;
-                        }
-                    }
-                    // Sidestep
-                    if (movementY != 0)
-                    {
-                        velocity = new Vector2(0, 0.15f);
-                        ExecuteAction(BattlerAction.Roll);
-                        if (movementY >= 1 && position.lane < BattleManager.Manager.field.lanes - 1)
-                        {
-                            position.lane += 1;
-                        }
-                        else if (movementY <= -1 && position.lane > 0)
-                        {
-                            position.lane -= 1;
-                        }
-                        actionPoints -= 1;
-                    }
+                    position.x += moveSpeed * actionSpeed;
+                }
+                else if (movementX <= -1)
+                {
+                    position.x -= moveSpeed * actionSpeed;
+                }
+            }
+            // Lane Change
+            if (movementY != 0)
+            {
+                if (movementY >= 1 && position.lane < BattleManager.Manager.field.lanes - 1)
+                {
+                    laneChange += actionSpeed;
+                }
+                else if (movementY <= -1 && position.lane > 0)
+                {
+                    laneChange -= actionSpeed;
                 }
             }
             else
-            {// Not Defending(Normal Movement) ================================
-                defending = false;
-                // Moving
-                if (movementX != 0)
-                {
-                    facing = movementX;
-                    if (movementX >= 1)
-                    {
-                        position.x += moveSpeed * actionSpeed;
-                    }
-                    else if (movementX <= -1)
-                    {
-                        position.x -= moveSpeed * actionSpeed;
-                    }
-                }
-                // Lane Change
-                if (movementY != 0)
-                {
-                    if (movementY >= 1 && position.lane < BattleManager.Manager.field.lanes - 1)
-                    {
-                        laneChange += actionSpeed;
-                    }
-                    else if (movementY <= -1 && position.lane > 0)
-                    {
-                        laneChange -= actionSpeed;
-                    }
-                }
-                else
-                {
-                    laneChange = 0;
-                }
-                if (laneChange >= 30)
-                {
-                    position.lane += 1;
-                    laneChange = 0;
-                }
-                if (laneChange <= -30)
-                {
-                    position.lane -= 1;
-                    laneChange = 0;
-                }
-                // Jumping
-                /*if (jump && airborne == false)
-                {
-                    velocity.y = jumpStrength;
-                    jump = false;
-                }*/
+            {
+                laneChange = 0;
             }
+            if (laneChange >= 30)
+            {
+                position.lane += 1;
+                laneChange = 0;
+            }
+            if (laneChange <= -30)
+            {
+                position.lane -= 1;
+                laneChange = 0;
+            }
+            // Block
+            if (defend)
+            {
+                currentState = Action.ACTING;
+                action = blockDelay;
+                blockFrames = blockDelay;
+            }
+            // Jumping
+            /*if (jump && airborne == false)
+            {
+                velocity.y = jumpStrength;
+                jump = false;
+            }*/
+            
         }
         // Using a Basic Attack ---------------------------------ATTACKING-------------------------------------------------------
         if (attackBasic && canAction)
@@ -530,32 +505,24 @@ public class Battler : MonoBehaviour {
                 currentFrameExecuted = false;
             }
             //make hits on strike frames If action is an atttack
-            foreach (BAStrike i in currentAction.strikeFrames)
+            foreach (BAStrike sFrame in currentAction.strikeFrames)
             {
-                if (currentFrame == i.frame && !currentFrameExecuted)
+                if (currentFrame == sFrame.frame && !currentFrameExecuted)
                 {
                     SetAttHitBox(1.3f);
                     // Hit other battlers
-                    foreach (Battler other in BattleManager.Manager.allBattlers)
+                    for (int i = 0; i < BattleManager.Manager.AllBattlers.Count; i++)
                     {// Other battlers
-                        if (other != this && other.alliance != alliance && other.alive)
+                        if (BattleManager.Manager.AllBattlers[i] != this && BattleManager.Manager.AllBattlers[i].alliance != alliance && BattleManager.Manager.AllBattlers[i].alive)
                         {// Not itself, not same team and is alive
-                            if (attachedHitBox.HitTest(other.hurtBox))
+                            if (attachedHitBox.HitTest(BattleManager.Manager.AllBattlers[i].hurtBox))
                             {
                                 // If a target is hit!
-                                if (!other.parry)
-                                {
-                                    DamageCVars damageV = new DamageCVars();
-                                    damageV.amount = Mathf.Round(i.power * attackDamage);
-                                    damageV.attackerAcc = accuracy;
+                                DamageCVars damageV = new DamageCVars();
+                                damageV.amount = Mathf.Round(sFrame.power * attackDamage);
+                                damageV.attackerAcc = accuracy;
 
-                                    other.GetHit(i.push * facing, i.lift, damageV);
-                                }
-                                else
-                                {
-                                    Stagger();
-                                    velocity = new Vector2(-0.05f * facing, 0);
-                                }
+                                BattleManager.Manager.AllBattlers[i].GetHit(sFrame.push * facing, sFrame.lift, damageV);
                             }
                         }
                     }
@@ -592,10 +559,20 @@ public class Battler : MonoBehaviour {
     public float GetHit(float xPush, float yPush, DamageCVars a_damage)
     {
         float finalDamage = CalcDamage(a_damage);
+
+        if (!block)
+        {
+            endurance -= finalDamage;
+        }
+        if (block)
+        {
+            blockFrames = 4;
+            action = 4;
+        }
+
         if (finalDamage > 0)
         {
             hitPoints -= finalDamage;
-            endurance -= finalDamage;
             if (endurance <= 0 || currentState == Action.STAGGERED)
             {
                 Stagger();
@@ -608,15 +585,9 @@ public class Battler : MonoBehaviour {
                 velocity = (new Vector2(xPush, yPush) / body.weight) / 2;
             }
         }
-        if (defending)
-        {
-            if (actionPoints > 1)
-            {
-                actionPoints--;
-            }
-        }
+        
 
-        BattleManager.Manager.TraceDamage(center + new Vector3(0, Random.Range(0, (body.height / 2)), 0), finalDamage);
+        BattleManager.Manager.TraceDamage(center + new Vector3(0, Random.Range(body.height / 2, body.height / 2 + 0.5f), 0), finalDamage);
         comboHits++;
         comboDamage += finalDamage;
         comboTime = 1.5f;
@@ -672,10 +643,9 @@ public class Battler : MonoBehaviour {
         execution = 0;
         actionPoints = actionPointsMax;
         currentState = Action.STAGGERED;
-        defending = false;
         thisAnimation.Play("hurt", -1, 0);
 
-        parryFrames = 0;
+        blockFrames = 0;
     }
 
     float CalcDamage(DamageCVars a_damage)
@@ -683,9 +653,9 @@ public class Battler : MonoBehaviour {
         float AccEvaMod = 1;
         float AccEvaScale = (evade + a_damage.attackerAcc);
         float evadeFinal = 0;
-        if (defending)
+        if (block)
         {
-            evadeFinal = evade * 2;
+            evadeFinal = evade * 2.5f;
         }
         else
         {
@@ -694,7 +664,7 @@ public class Battler : MonoBehaviour {
 
         AccEvaMod = ((evadeFinal - a_damage.attackerAcc) / AccEvaScale) * -1;
 
-        if (defending && AccEvaMod > 0)
+        if (block && AccEvaMod > 0)
         {
             AccEvaMod = 0;
         }
@@ -749,7 +719,7 @@ public class Battler : MonoBehaviour {
         {
             if (actionPoints < actionPointsMax)
             {
-                if (!defending /*&& movementX == 0 && movementY == 0*/)
+                if (!block /*&& movementX == 0 && movementY == 0*/)
                 {
                     actionPoints += 1.0f / (30.0f);
                 }
@@ -764,12 +734,12 @@ public class Battler : MonoBehaviour {
             }
         }
         // Parry
-        if (parryFrames > 0)
+        if (blockFrames > 0)
         {
-            parryFrames--;
-            if (parryFrames < 0)
+            blockFrames--;
+            if (blockFrames < 0)
             {
-                parryFrames = 0;
+                blockFrames = 0;
             }
         }
         // Action Time
@@ -809,14 +779,14 @@ public class Battler : MonoBehaviour {
     private void PhysicsUpdate()
     {
         // Push other Battlers
-        foreach (Battler other in BattleManager.Manager.allBattlers)
+        for (int i = 0; i < BattleManager.Manager.AllBattlers.Count; i++)
         {
-            if (other != this && other.alive && alive)
+            if (BattleManager.Manager.AllBattlers[i] != this && BattleManager.Manager.AllBattlers[i].alive && alive)
             {
-                if (hurtBox.HitTest(other.hurtBox))
+                if (hurtBox.HitTest(BattleManager.Manager.AllBattlers[i].hurtBox))
                 {
-                    float xDif = position.x - other.position.x;//from other
-                    float compWidth = (body.width / 2) + (other.body.width / 2);
+                    float xDif = position.x - BattleManager.Manager.AllBattlers[i].position.x;//from other
+                    float compWidth = (body.width / 2) + (BattleManager.Manager.AllBattlers[i].body.width / 2);
                     //float weightDif = body.weight - other.body.weight;
 
                     if (xDif < 0)
@@ -890,6 +860,14 @@ public class Battler : MonoBehaviour {
         else
         {
             thisAnimation.Play("jump");
+        }
+    }
+
+    public void Join()
+    {
+        if (FindObjectOfType<BattleManager>())
+        {
+            BattleManager.Manager.AllBattlers.Add(this);
         }
     }
 }

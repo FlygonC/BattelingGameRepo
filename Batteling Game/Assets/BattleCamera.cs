@@ -66,7 +66,7 @@ public class BattleCamera : MonoBehaviour {
         furthestRight = -Mathf.Infinity;
         tallest = -Mathf.Infinity;
         //shortest = 0;
-        foreach (Battler i in BattleManager.Manager.allBattlers)
+        foreach (Battler i in BattleManager.Manager.AllBattlers)
         {
             if (i.alive)
             {
